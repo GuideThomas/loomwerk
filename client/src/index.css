@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Placeholder styling only — the real design system (precision-instrument
+   look, light/dark) lands in the UI phase. */
+:root {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}

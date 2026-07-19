@@ -1,0 +1,23 @@
+{
+  "app": {
+    "tagline": "Ideen, gezüchtet und ausgesiebt."
+  },
+  "nav": {
+    "provocations": "Provokationen",
+    "threads": "Fäden",
+    "balance": "Bilanz",
+    "sources": "Quellen"
+  },
+  "provocations": {
+    "empty": "Keine offenen Provokationen. Der nächste Zyklus bringt Überlebende — oder nichts, auch das ist eine Antwort.",
+    "loading": "Lädt…",
+    "promote": "Befördern",
+    "dismiss": "Verwerfen",
+    "love": "Gefällt mir",
+    "dismissReason": "Warum verwerfen? (optional, trainiert den Anti-Geschmack)"
+  },
+  "common": {
+    "language": "Sprache",
+    "error": "Etwas ist schiefgelaufen: {{message}}"
+  }
+}

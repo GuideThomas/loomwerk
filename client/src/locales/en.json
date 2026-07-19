@@ -1,0 +1,23 @@
+{
+  "app": {
+    "tagline": "Ideas, bred and culled."
+  },
+  "nav": {
+    "provocations": "Provocations",
+    "threads": "Threads",
+    "balance": "Balance",
+    "sources": "Sources"
+  },
+  "provocations": {
+    "empty": "No open provocations. The next cycle will bring survivors — or nothing, which is also an answer.",
+    "loading": "Loading…",
+    "promote": "Promote",
+    "dismiss": "Dismiss",
+    "love": "Love",
+    "dismissReason": "Why dismiss? (optional, trains the anti-taste model)"
+  },
+  "common": {
+    "language": "Language",
+    "error": "Something went wrong: {{message}}"
+  }
+}
