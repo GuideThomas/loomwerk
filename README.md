@@ -184,14 +184,30 @@ verdicts and numbers.
 - **Not a volume play.** If a cycle produces zero survivors, that is a
   result, not a failure.
 
+## MCP server
+
+Since v0.2 Loomwerk ships an MCP server, so Claude and other MCP clients
+can feed the engine and harvest provocations from inside a conversation:
+
+```bash
+claude mcp add loomwerk --env LOOMWERK_DATA_DIR=/path/to/your/data \
+  -- npx -y -p loomwerk loomwerk-mcp
+```
+
+(In the repo: `npm run mcp -w server`.) Point `LOOMWERK_DATA_DIR` at the
+same directory the app uses so both see one database — SQLite in WAL mode
+shares fine.
+
+Six tools: `ingest_seed` (push a tension, same contract as the webhook),
+`list_provocations`, `react`, `list_threads`, `get_balance`, `run_cycle`.
+One deliberate rule is baked into the tool descriptions: reactions pushed
+through MCP count as the **user's own verdicts** and train the taste model
+— an assistant should only react when the user actually decided.
+
 ## Roadmap
 
 Best-effort, in rough order:
 
-- **MCP server** — expose ingest / read / react as native tools, so Claude
-  and other MCP clients can feed the engine and harvest provocations from
-  inside a conversation. (Until then, the webhook covers any producer that
-  speaks HTTP.)
 - **Cross-source tensions** — pair a feed item against a vault note; today
   tensions stay within one source.
 - **Grounding automation** — an automatic read-only fact-check pass before

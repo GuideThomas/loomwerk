@@ -175,14 +175,32 @@ Funkeln — Gates, Verdikte und Zahlen.
 - **Kein Mengen-Spiel.** Liefert ein Zyklus null Überlebende, ist das ein
   Ergebnis, kein Fehler.
 
+## MCP-Server
+
+Seit v0.2 bringt Loomwerk einen MCP-Server mit — Claude und andere
+MCP-Clients können die Maschine direkt aus einem Gespräch füttern und
+ernten:
+
+```bash
+claude mcp add loomwerk --env LOOMWERK_DATA_DIR=/pfad/zu/deinen/daten \
+  -- npx -y -p loomwerk loomwerk-mcp
+```
+
+(Im Repo: `npm run mcp -w server`.) `LOOMWERK_DATA_DIR` auf dasselbe
+Verzeichnis wie die App zeigen lassen — SQLite im WAL-Modus teilt sich
+problemlos.
+
+Sechs Tools: `ingest_seed` (Spannung pushen, gleicher Contract wie der
+Webhook), `list_provocations`, `react`, `list_threads`, `get_balance`,
+`run_cycle`. Eine bewusste Regel steckt in den Tool-Beschreibungen:
+Reaktionen über MCP zählen als **Verdikte des Users** und trainieren das
+Geschmacksmodell — ein Assistent soll nur reagieren, wenn der Mensch
+wirklich entschieden hat.
+
 ## Roadmap
 
 Best-effort, in grober Reihenfolge:
 
-- **MCP-Server** — Ingest / Lesen / Reagieren als native Tools, damit Claude
-  und andere MCP-Clients die Maschine direkt aus einem Gespräch füttern und
-  ernten können. (Bis dahin deckt der Webhook jeden Produzenten ab, der
-  HTTP spricht.)
 - **Quellenübergreifende Spannungen** — eine Feed-Meldung gegen eine
   Vault-Notiz paaren; heute bleiben Spannungen innerhalb einer Quelle.
 - **Grounding-Automation** — ein automatischer read-only Fakten-Check,

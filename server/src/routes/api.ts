@@ -51,7 +51,7 @@ export function apiRouter(db: Database): Router {
     const totalHypotheses = (db.prepare('SELECT COUNT(*) AS n FROM hypotheses').get() as { n: number }).n;
     res.json({
       ok: true,
-      version: '0.1.0',
+      version: '0.2.0',
       provider: cfg
         ? { configured: true, baseUrl: cfg.baseUrl, models: cfg.models, dailyRequestCap: cfg.dailyRequestCap }
         : { configured: false },
