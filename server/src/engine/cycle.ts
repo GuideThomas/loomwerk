@@ -5,7 +5,8 @@ import { runFitness } from './fitness.js';
 import { runPulse } from './pulse.js';
 import { runWeave } from './weave.js';
 import type { Provider } from './provider.js';
-import { demoSource, type SeedSource } from './seeds.js';
+import type { SeedSource } from './seeds.js';
+import { loadSources } from '../connectors/index.js';
 
 // One full daily cycle: pulse → critic → fitness → weave. Each stage is
 // recorded as a run row regardless of outcome — the balance sheet depends
@@ -40,18 +41,11 @@ export async function runCycle(
   provider: Provider,
   sources?: SeedSource[],
 ): Promise<CycleSummary> {
-  const activeSources = sources ?? defaultSources();
+  const activeSources = sources ?? loadSources(db);
   return {
     pulse: await stage(db, 'pulse', () => runPulse(db, provider, activeSources)),
     critic: await stage(db, 'critic', () => runCritic(db, provider)),
     fitness: await stage(db, 'fitness', () => runFitness(db, provider)),
     weave: await stage(db, 'weave', () => runWeave(db, provider)),
   };
-}
-
-// Until real connectors land, the demo source keeps the cycle experiencable.
-// It is only active when explicitly enabled or when no source is configured.
-export function defaultSources(): SeedSource[] {
-  if (process.env.LOOMWERK_DEMO_SEEDS === '0') return [];
-  return [demoSource];
 }

@@ -15,6 +15,7 @@ import { getThreadDetail, listThreads } from '../lib/threads.js';
 import { listRuns } from '../lib/runs.js';
 import { runCycle } from '../engine/cycle.js';
 import { createOpenAiProvider, providerConfigFromEnv } from '../engine/provider.js';
+import { enqueueSeed } from '../connectors/webhook.js';
 import { config } from '../config.js';
 
 const SIGNALS: Signal[] = ['promoted', 'pursued', 'ignored', 'dismissed', 'loved'];
@@ -106,6 +107,70 @@ export function apiRouter(db: Database): Router {
 
   r.get('/runs', (_req, res) => {
     res.json(listRuns(db));
+  });
+
+  // --- sources (connectors) -------------------------------------------------
+
+  const SOURCE_KINDS = ['markdown', 'rss', 'jsonl', 'demo'];
+
+  r.get('/sources', (_req, res) => {
+    res.json(db.prepare('SELECT * FROM sources ORDER BY id').all());
+  });
+
+  r.post('/sources', (req, res) => {
+    const b = req.body ?? {};
+    if (!SOURCE_KINDS.includes(b.kind)) {
+      throw new ApiError(400, `kind must be one of ${SOURCE_KINDS.join(', ')}`);
+    }
+    if (typeof b.name !== 'string' || !b.name.trim()) throw new ApiError(400, 'name is required');
+    const cfg = b.config ?? {};
+    if (typeof cfg !== 'object' || Array.isArray(cfg)) throw new ApiError(400, 'config must be an object');
+    const result = db
+      .prepare('INSERT INTO sources (kind, name, config, enabled) VALUES (?, ?, ?, ?)')
+      .run(b.kind, b.name.trim(), JSON.stringify(cfg), b.enabled === false ? 0 : 1);
+    res.status(201).json(db.prepare('SELECT * FROM sources WHERE id=?').get(result.lastInsertRowid));
+  });
+
+  r.patch('/sources/:id', (req, res) => {
+    const id = Number(req.params.id);
+    const existing = db.prepare('SELECT * FROM sources WHERE id=?').get(id) as
+      | { config: string }
+      | undefined;
+    if (!existing) throw new ApiError(404, `source ${id} not found`);
+    const b = req.body ?? {};
+    if (b.name !== undefined && (typeof b.name !== 'string' || !b.name.trim())) {
+      throw new ApiError(400, 'name must be a non-empty string');
+    }
+    db.prepare(
+      `UPDATE sources SET
+         name    = COALESCE(?, name),
+         config  = COALESCE(?, config),
+         enabled = COALESCE(?, enabled)
+       WHERE id = ?`,
+    ).run(
+      b.name?.trim() ?? null,
+      b.config !== undefined ? JSON.stringify(b.config) : null,
+      b.enabled !== undefined ? (b.enabled ? 1 : 0) : null,
+      id,
+    );
+    res.json(db.prepare('SELECT * FROM sources WHERE id=?').get(id));
+  });
+
+  r.delete('/sources/:id', (req, res) => {
+    const result = db.prepare('DELETE FROM sources WHERE id=?').run(Number(req.params.id));
+    if (!result.changes) throw new ApiError(404, `source ${req.params.id} not found`);
+    res.json({ ok: true });
+  });
+
+  // Webhook ingest: external systems push tensions; the next cycle breeds
+  // on them. Requires only key + tension — see connectors/webhook.ts.
+  r.post('/seeds', (req, res) => {
+    try {
+      const id = enqueueSeed(db, req.body ?? {});
+      res.status(201).json({ id });
+    } catch (e) {
+      throw new ApiError(400, (e as Error).message);
+    }
   });
 
   // Manual cycle trigger. Long-running, so it answers 202 immediately —

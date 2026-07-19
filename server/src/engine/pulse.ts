@@ -69,8 +69,13 @@ export async function runPulse(
   const seeds: Seed[] = [];
   for (const source of sources) {
     try {
-      seeds.push(...(await source.detect()));
+      seeds.push(...(await source.detect({ db, provider })));
+      db.prepare("UPDATE sources SET last_run_at=datetime('now') WHERE name=?").run(source.name);
     } catch (e) {
+      if (e instanceof BudgetExceededError) {
+        console.error(`[pulse] budget exhausted while '${source.name}' was indexing — clean stop`);
+        break;
+      }
       counts.errors++;
       console.error(`[pulse] source '${source.name}' failed:`, (e as Error).message);
     }

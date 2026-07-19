@@ -7,8 +7,9 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "cycle": "tsx src/scripts/cycle-cli.ts",
+    "detect": "tsx src/scripts/detect-cli.ts",
     "build": "tsc",
-    "test": "tsx src/scripts/smoketest.ts && tsx src/scripts/engine-smoketest.ts"
+    "test": "tsx src/scripts/smoketest.ts && tsx src/scripts/engine-smoketest.ts && tsx src/scripts/connector-smoketest.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.4.1",
