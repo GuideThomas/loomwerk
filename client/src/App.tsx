@@ -1,102 +1,188 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { api, type Health } from './api';
 import { setLanguage } from './i18n';
+import Inbox from './components/Inbox';
+import Threads from './components/Threads';
+import Balance from './components/Balance';
+import Sources from './components/Sources';
+import RunView from './components/RunView';
+import Onboarding from './components/Onboarding';
 
-interface Hypothesis {
-  id: number;
-  statement: string;
-  rationale: string | null;
-  domain: string | null;
-  niche: string | null;
-  status: string;
-}
+type Screen = 'inbox' | 'threads' | 'balance' | 'sources' | 'run' | 'onboarding';
 
-// Deliberately plain shell — enough to click through the lifecycle against
-// the API. The actual instrument-panel design replaces this in the UI phase.
+const NAV: Array<[Screen, string]> = [
+  ['inbox', '01'],
+  ['threads', '02'],
+  ['balance', '03'],
+  ['sources', '04'],
+  ['run', '05'],
+  ['onboarding', '06'],
+];
+
+// Which pipeline stage each screen highlights in the breadcrumb.
+const STAGE_MAP: Record<Screen, string | 'all' | null> = {
+  inbox: 'provocation',
+  threads: 'thread',
+  balance: null,
+  sources: 'tension',
+  run: 'all',
+  onboarding: null,
+};
+const STAGES = ['tension', 'hypothesis', 'provocation', 'thread', 'action'];
+
 export default function App() {
   const { t, i18n } = useTranslation();
-  const [items, setItems] = useState<Hypothesis[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [screen, setScreen] = useState<Screen>('inbox');
+  const [theme, setTheme] = useState<'dark' | 'light'>(
+    (localStorage.getItem('loomwerk.theme') as 'dark' | 'light') ?? 'dark',
+  );
+  const [health, setHealth] = useState<Health | null>(null);
+  const [booted, setBooted] = useState(false);
 
-  const load = () => {
-    fetch('/api/hypotheses?status=provocation')
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then(setItems)
-      .catch((e: Error) => setError(e.message));
-  };
-  useEffect(load, []);
+  const refreshHealth = useCallback(() => {
+    api.health().then(setHealth).catch(() => setHealth(null));
+  }, []);
 
-  const react = async (id: number, signal: string, note?: string) => {
-    await fetch(`/api/hypotheses/${id}/react`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ signal, note }),
-    });
-    load();
+  useEffect(() => {
+    api
+      .health()
+      .then((h) => {
+        setHealth(h);
+        // Fresh install → start in the setup flow, not an empty inbox.
+        if (h.totalHypotheses === 0 && h.sourceCount === 0) setScreen('onboarding');
+      })
+      .catch(() => setHealth(null))
+      .finally(() => setBooted(true));
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    localStorage.setItem('loomwerk.theme', next);
   };
+
+  const activeStage = STAGE_MAP[screen];
+  const meta = screenMeta(screen, health, t);
 
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <header className="mb-8 flex items-baseline justify-between border-b pb-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Loomwerk</h1>
-          <p className="text-sm text-neutral-500">{t('app.tagline')}</p>
-        </div>
-        <div className="text-sm">
-          <button
-            className={i18n.language === 'en' ? 'font-bold' : 'text-neutral-400'}
-            onClick={() => setLanguage('en')}
-          >
-            EN
-          </button>
-          <span className="mx-1 text-neutral-300">/</span>
-          <button
-            className={i18n.language === 'de' ? 'font-bold' : 'text-neutral-400'}
-            onClick={() => setLanguage('de')}
-          >
-            DE
-          </button>
-        </div>
-      </header>
-
-      <h2 className="mb-4 text-sm font-medium uppercase tracking-wide text-neutral-500">
-        {t('nav.provocations')}
-      </h2>
-
-      {error && <p className="text-red-600">{t('common.error', { message: error })}</p>}
-      {!error && items === null && <p>{t('provocations.loading')}</p>}
-      {items !== null && items.length === 0 && (
-        <p className="text-neutral-500">{t('provocations.empty')}</p>
-      )}
-
-      <ul className="space-y-3">
-        {items?.map((h) => (
-          <li key={h.id} className="rounded border p-4">
-            <div className="mb-1 font-mono text-xs text-neutral-400">
-              #{h.id} · {h.domain ?? '—'} {h.niche ? `· ${h.niche}` : ''}
+    <div data-theme={theme} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg)', display: 'flex' }}>
+      <aside style={{ width: 236, flex: '0 0 236px', borderRight: '1px solid var(--line)', background: 'var(--panel)', display: 'flex', flexDirection: 'column', height: '100vh', position: 'sticky', top: 0 }}>
+        <div style={{ padding: '20px 18px 18px', borderBottom: '1px solid var(--line)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 12, height: 12, border: '1.5px solid var(--amber)', position: 'relative' }}>
+              <div style={{ position: 'absolute', inset: 2.5, background: 'var(--amber)' }} />
             </div>
-            <p className="mb-2">{h.statement}</p>
-            {h.rationale && <p className="mb-3 text-sm text-neutral-500">{h.rationale}</p>}
-            <div className="flex gap-2 text-sm">
-              <button className="rounded border px-2 py-1" onClick={() => react(h.id, 'promoted')}>
-                {t('provocations.promote')}
-              </button>
+            <div style={{ fontWeight: 700, letterSpacing: '0.16em', fontSize: 15 }}>LOOMWERK</div>
+          </div>
+          <div className="label" style={{ marginTop: 8 }}>{t('app.tagline')}</div>
+        </div>
+
+        <nav style={{ padding: '10px 0', flex: 1, overflow: 'auto' }}>
+          {NAV.map(([key, idx]) => {
+            const active = screen === key;
+            return (
               <button
-                className="rounded border px-2 py-1"
-                onClick={() => {
-                  const note = window.prompt(t('provocations.dismissReason')) ?? undefined;
-                  void react(h.id, 'dismissed', note);
+                key={key}
+                onClick={() => setScreen(key)}
+                style={{
+                  all: 'unset', boxSizing: 'border-box', width: '100%', cursor: 'pointer',
+                  display: 'flex', alignItems: 'baseline', gap: 12, padding: '9px 18px',
+                  borderLeft: `2px solid ${active ? 'var(--amber)' : 'transparent'}`,
+                  background: active ? 'var(--panel-2)' : 'transparent',
+                  color: active ? 'var(--fg)' : 'var(--dim)',
                 }}
               >
-                {t('provocations.dismiss')}
+                <span className="mono" style={{ fontSize: 10, color: 'var(--faint)' }}>{idx}</span>
+                <span style={{ fontSize: 13.5, fontWeight: 500 }}>{t(`nav.${key}`)}</span>
               </button>
-              <button className="rounded border px-2 py-1" onClick={() => react(h.id, 'loved')}>
-                {t('provocations.love')}
-              </button>
+            );
+          })}
+        </nav>
+
+        <div style={{ borderTop: '1px solid var(--line)', padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="btn" style={{ flex: 1, textAlign: 'center', fontSize: 10, letterSpacing: '0.08em', padding: '7px 0', border: '1px solid var(--line-2)', color: 'var(--dim)' }} onClick={toggleTheme}>
+              {theme === 'dark' ? t('common.theme_light') : t('common.theme_dark')}
+            </button>
+            <div style={{ display: 'flex', border: '1px solid var(--line-2)' }}>
+              {(['en', 'de'] as const).map((lang) => {
+                const active = i18n.language === lang;
+                return (
+                  <button
+                    key={lang}
+                    className="mono"
+                    style={{
+                      all: 'unset', cursor: 'pointer', fontFamily: 'var(--mono)', fontSize: 10, padding: '7px 10px',
+                      background: active ? 'var(--amber)' : 'transparent',
+                      color: active ? 'var(--on-amber)' : 'var(--dim)',
+                    }}
+                    onClick={() => setLanguage(lang)}
+                  >
+                    {lang.toUpperCase()}
+                  </button>
+                );
+              })}
             </div>
-          </li>
-        ))}
-      </ul>
+          </div>
+          <div className="mono" style={{ fontSize: 10, color: 'var(--faint)', letterSpacing: '0.04em', display: 'flex', justifyContent: 'space-between' }}>
+            <span>v{health?.version ?? '—'}</span>
+            <span>{health?.provider.configured ? t('common.idle').toUpperCase() : 'NO LLM'}</span>
+            <span>{health ? `${health.openProvocations}▸` : ''}</span>
+          </div>
+        </div>
+      </aside>
+
+      <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+        <div className="mono" style={{ display: 'flex', alignItems: 'center', padding: '11px 24px', borderBottom: '1px solid var(--line)', background: 'var(--panel)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          {STAGES.map((s, i) => {
+            const on = activeStage === 'all' || activeStage === s;
+            return (
+              <span key={s}>
+                <span style={{ color: on ? 'var(--amber)' : 'var(--faint)', fontWeight: on ? 600 : 400 }}>{t(`stages.${s}`)}</span>
+                {i < STAGES.length - 1 && <span style={{ color: 'var(--faint)', margin: '0 10px' }}>→</span>}
+              </span>
+            );
+          })}
+        </div>
+
+        <div style={{ padding: '20px 24px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid var(--line)' }}>
+          <div>
+            <h1 style={{ fontSize: 23, fontWeight: 600, letterSpacing: '-0.015em', margin: 0 }}>{t(`screens.${screen}.title`)}</h1>
+            <p style={{ color: 'var(--dim)', fontSize: 13, margin: '4px 0 0', maxWidth: 560 }}>{t(`screens.${screen}.sub`)}</p>
+          </div>
+          <div className="mono" style={{ fontSize: 11, color: 'var(--dim)', textAlign: 'right', whiteSpace: 'nowrap' }}>{meta}</div>
+        </div>
+
+        <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
+          {booted && (
+            <>
+              {screen === 'inbox' && <Inbox onChanged={refreshHealth} />}
+              {screen === 'threads' && <Threads maxDepth={health?.maxThreadDepth ?? 5} onChanged={refreshHealth} />}
+              {screen === 'balance' && <Balance />}
+              {screen === 'sources' && <Sources health={health} onChanged={refreshHealth} />}
+              {screen === 'run' && <RunView health={health} onChanged={refreshHealth} />}
+              {screen === 'onboarding' && (
+                <Onboarding
+                  health={health}
+                  goSources={() => setScreen('sources')}
+                  onDone={(target) => {
+                    refreshHealth();
+                    setScreen(target);
+                  }}
+                />
+              )}
+            </>
+          )}
+        </div>
+      </main>
     </div>
   );
+}
+
+function screenMeta(screen: Screen, health: Health | null, t: (k: string, o?: Record<string, unknown>) => string): string {
+  if (!health) return '';
+  if (screen === 'inbox') return t('common.awaiting', { n: health.openProvocations });
+  if (screen === 'sources') return `${health.sourceCount} ${t('nav.sources').toLowerCase()}`;
+  return '';
 }
