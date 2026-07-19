@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: Loomwerk
+message: "If you use or build upon Loomwerk, please cite it as below."
+type: software
+authors:
+  - family-names: Winkler
+    given-names: Thomas
+repository-code: "https://github.com/GuideThomas/loomwerk"
+abstract: >-
+  Loomwerk is an open innovation engine: it breeds hypotheses from tensions in
+  a user's own knowledge sources, selects them via a quality-diversity critic
+  panel, learns the user's taste from their decisions, and matures surviving
+  ideas into long-running threads.
+keywords:
+  - innovation-engine
+  - quality-diversity
+  - novelty-search
+  - map-elites
+  - knowledge-management
+license: AGPL-3.0-only
+date-released: "2026-07-19"

@@ -1,0 +1,21 @@
+{
+  "name": "loomwerk",
+  "version": "0.1.0-dev",
+  "private": true,
+  "description": "Loomwerk — an open innovation engine that breeds, selects and matures ideas from your own knowledge sources.",
+  "author": "Thomas Winkler",
+  "license": "AGPL-3.0-only",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w server",
+    "build": "npm run build -w server && npm run build -w client",
+    "test": "npm run test -w server",
+    "start": "node server/dist/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
