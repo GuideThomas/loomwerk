@@ -110,7 +110,7 @@ await check('markdown: cross-domain pair inside the similarity band', async () =
   const seeds = await mdSource.detect({ db, provider: fake });
   assert(seeds.length === 1, `expected exactly 1 seed, got ${seeds.length}`);
   const s = seeds[0]!;
-  assert(s.key.startsWith('md:pair:'), 'pair key format');
+  assert(/^md:\d+:pair:/.test(s.key), 'pair key includes the source id (multi-vault safety)');
   assert(s.tension.includes('fermentation-log') || s.tension.includes('Daily notes'), 'tension quotes note A');
   assert(s.tension.includes('cos 0.72'), `tension names the similarity (${s.tension.slice(0, 80)})`);
   assert(s.mode === 'idea', 'markdown seeds run in idea mode');
@@ -209,7 +209,7 @@ await check('full cycle breeds from the registered vault source', async () => {
   const summary = await runCycle(db, fake);
   assert(summary.pulse && (summary.pulse.created ?? 0) >= 1, `pulse created ${summary.pulse?.created}`);
   const bred = db
-    .prepare("SELECT seed_refs FROM hypotheses WHERE seed_refs LIKE '%md:pair:%'")
+    .prepare("SELECT seed_refs FROM hypotheses WHERE seed_refs LIKE '%:pair:%'")
     .all();
   assert(bred.length >= 1, 'hypothesis traces back to the markdown pair seed');
 });

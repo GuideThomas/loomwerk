@@ -109,9 +109,12 @@ function sharedTitleWords(a: string, b: string): number {
   return n;
 }
 
-function pairKey(a: string, b: string): string {
+// The source id is part of the key: users run several vaults in parallel,
+// and two vaults with the same folder layout (daily notes!) must not
+// dedupe each other's pairs.
+function pairKey(sourceId: number, a: string, b: string): string {
   const h = (s: string) => crypto.createHash('sha1').update(s).digest('hex').slice(0, 10);
-  return `md:pair:${[h(a), h(b)].sort().join('x')}`;
+  return `md:${sourceId}:pair:${[h(a), h(b)].sort().join('x')}`;
 }
 
 interface IndexRow {
@@ -234,7 +237,7 @@ export function createMarkdownSource(sourceId: number, name: string, config: Mar
           used.add(keyA);
           used.add(best.key);
           seeds.push({
-            key: pairKey(keyA, best.key),
+            key: pairKey(sourceId, keyA, best.key),
             seedType: 'cross_domain',
             domain: 'notes',
             topic: a.topic,
