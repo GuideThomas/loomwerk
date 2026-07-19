@@ -16,6 +16,7 @@ import { listRuns } from '../lib/runs.js';
 import { runCycle } from '../engine/cycle.js';
 import { createOpenAiProvider, providerConfigFromEnv } from '../engine/provider.js';
 import { enqueueSeed } from '../connectors/webhook.js';
+import { getBalance } from '../lib/balance.js';
 import { config } from '../config.js';
 
 const SIGNALS: Signal[] = ['promoted', 'pursued', 'ignored', 'dismissed', 'loved'];
@@ -40,7 +41,29 @@ export function apiRouter(db: Database): Router {
   });
 
   r.get('/health', (_req, res) => {
-    res.json({ ok: true, version: '0.1.0-dev' });
+    // Enough context for the client to render onboarding and status without
+    // extra round trips. Never includes the API key itself.
+    const cfg = providerConfigFromEnv();
+    const sourceCount = (db.prepare('SELECT COUNT(*) AS n FROM sources WHERE enabled=1').get() as { n: number }).n;
+    const openProvocations = (
+      db.prepare("SELECT COUNT(*) AS n FROM hypotheses WHERE status='provocation'").get() as { n: number }
+    ).n;
+    const totalHypotheses = (db.prepare('SELECT COUNT(*) AS n FROM hypotheses').get() as { n: number }).n;
+    res.json({
+      ok: true,
+      version: '0.1.0-dev',
+      provider: cfg
+        ? { configured: true, baseUrl: cfg.baseUrl, models: cfg.models, dailyRequestCap: cfg.dailyRequestCap }
+        : { configured: false },
+      maxThreadDepth: Number(process.env.LOOMWERK_MAX_THREAD_DEPTH ?? 5),
+      sourceCount,
+      openProvocations,
+      totalHypotheses,
+    });
+  });
+
+  r.get('/balance', (_req, res) => {
+    res.json(getBalance(db));
   });
 
   r.get('/hypotheses', (req, res) => {
