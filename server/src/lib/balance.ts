@@ -21,7 +21,9 @@ export interface BalanceReport {
   successRate: number; // wins / total
   nuggetRate: number;  // (wins + nuggets) / total
   llmRequests: number; // lifetime, from run accounting
-  costUsd: number;     // lifetime, 0 unless cost tracking is wired
+  tokensIn: number;    // lifetime prompt tokens
+  tokensOut: number;   // lifetime completion tokens
+  costUsd: number;     // lifetime — gateway-measured and/or rate-priced
   cycles: number;      // distinct run days
 }
 
@@ -54,10 +56,11 @@ export function getBalance(db: Database): BalanceReport {
   const runs = db
     .prepare(
       `SELECT COALESCE(SUM(llm_requests),0) AS req, COALESCE(SUM(cost_usd),0) AS cost,
+              COALESCE(SUM(tokens_in),0) AS tin, COALESCE(SUM(tokens_out),0) AS tout,
               COUNT(DISTINCT date(started_at)) AS days
        FROM runs`,
     )
-    .get() as { req: number; cost: number; days: number };
+    .get() as { req: number; cost: number; tin: number; tout: number; days: number };
 
   const total = rows.length;
   return {
@@ -66,6 +69,8 @@ export function getBalance(db: Database): BalanceReport {
     successRate: total ? categories.win / total : 0,
     nuggetRate: total ? (categories.win + categories.nugget) / total : 0,
     llmRequests: runs.req,
+    tokensIn: runs.tin,
+    tokensOut: runs.tout,
     costUsd: runs.cost,
     cycles: runs.days,
   };

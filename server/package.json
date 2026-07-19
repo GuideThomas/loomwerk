@@ -1,6 +1,6 @@
 {
   "name": "@loomwerk/server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "license": "AGPL-3.0-only",
@@ -10,7 +10,7 @@
     "detect": "tsx src/scripts/detect-cli.ts",
     "build": "tsc",
     "mcp": "tsx src/mcp.ts",
-    "test": "tsx src/scripts/smoketest.ts && tsx src/scripts/engine-smoketest.ts && tsx src/scripts/connector-smoketest.ts && tsx src/scripts/mcp-smoketest.ts"
+    "test": "tsx src/scripts/smoketest.ts && tsx src/scripts/engine-smoketest.ts && tsx src/scripts/connector-smoketest.ts && tsx src/scripts/mcp-smoketest.ts && tsx src/scripts/provider-smoketest.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

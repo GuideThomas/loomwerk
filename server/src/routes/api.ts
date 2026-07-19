@@ -14,7 +14,7 @@ import {
 import { getThreadDetail, listThreads } from '../lib/threads.js';
 import { listRuns } from '../lib/runs.js';
 import { runCycle } from '../engine/cycle.js';
-import { createOpenAiProvider, providerConfigFromEnv } from '../engine/provider.js';
+import { createOpenAiProvider, llmDayStats, pricingConfigured, providerConfigFromEnv } from '../engine/provider.js';
 import { enqueueSeed } from '../connectors/webhook.js';
 import { getBalance } from '../lib/balance.js';
 import { config } from '../config.js';
@@ -49,12 +49,26 @@ export function apiRouter(db: Database): Router {
       db.prepare("SELECT COUNT(*) AS n FROM hypotheses WHERE status='provocation'").get() as { n: number }
     ).n;
     const totalHypotheses = (db.prepare('SELECT COUNT(*) AS n FROM hypotheses').get() as { n: number }).n;
+    const day = llmDayStats(db);
     res.json({
       ok: true,
-      version: '0.2.0',
+      version: '0.3.0',
       provider: cfg
-        ? { configured: true, baseUrl: cfg.baseUrl, models: cfg.models, dailyRequestCap: cfg.dailyRequestCap }
+        ? {
+            configured: true,
+            baseUrl: cfg.baseUrl,
+            models: cfg.models,
+            dailyRequestCap: cfg.dailyRequestCap,
+            dailyTokenCap: cfg.dailyTokenCap,
+            pricingConfigured: pricingConfigured(cfg),
+          }
         : { configured: false },
+      today: {
+        requests: day.requests,
+        tokens: day.tokensIn + day.tokensOut,
+        costMeasured: day.costMeasured,
+        costPriced: day.costPriced,
+      },
       maxThreadDepth: Number(process.env.LOOMWERK_MAX_THREAD_DEPTH ?? 5),
       sourceCount,
       openProvocations,
