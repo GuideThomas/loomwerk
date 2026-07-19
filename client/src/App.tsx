@@ -31,18 +31,23 @@ const STAGE_MAP: Record<Screen, string | 'all' | null> = {
 };
 const STAGES = ['tension', 'hypothesis', 'provocation', 'thread', 'action'];
 
-// Deep-linkable screens: /?screen=balance opens straight into a view.
+// Deep-linkable screens and theme: /?screen=balance&theme=light opens
+// straight into a view — handy for sharing and for doc screenshots.
 function initialScreen(): Screen {
   const q = new URLSearchParams(window.location.search).get('screen');
   return NAV.some(([k]) => k === q) ? (q as Screen) : 'inbox';
 }
 
+function initialTheme(): 'dark' | 'light' {
+  const q = new URLSearchParams(window.location.search).get('theme');
+  if (q === 'light' || q === 'dark') return q;
+  return (localStorage.getItem('loomwerk.theme') as 'dark' | 'light') ?? 'dark';
+}
+
 export default function App() {
   const { t, i18n } = useTranslation();
   const [screen, setScreen] = useState<Screen>(initialScreen);
-  const [theme, setTheme] = useState<'dark' | 'light'>(
-    (localStorage.getItem('loomwerk.theme') as 'dark' | 'light') ?? 'dark',
-  );
+  const [theme, setTheme] = useState<'dark' | 'light'>(initialTheme);
   const [health, setHealth] = useState<Health | null>(null);
   const [booted, setBooted] = useState(false);
 
