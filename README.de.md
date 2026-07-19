@@ -1,9 +1,17 @@
 # Loomwerk
 
+[![npm](https://img.shields.io/npm/v/loomwerk)](https://www.npmjs.com/package/loomwerk)
+[![CI](https://github.com/GuideThomas/loomwerk/actions/workflows/ci.yml/badge.svg)](https://github.com/GuideThomas/loomwerk/actions)
+[![license](https://img.shields.io/badge/license-AGPL--3.0--only%20%7C%20commercial-blue)](LICENSE)
+
 > Eine offene Innovationsmaschine: Loomwerk züchtet Ideen aus den Spannungen
 > deiner eigenen Wissensquellen, sortiert 90 % davon bewusst aus, lernt
 > deinen Geschmack aus deinen Entscheidungen — und lässt die Überlebenden in
 > langlebigen Fäden reifen.
+
+```bash
+npx loomwerk   # → http://127.0.0.1:7791
+```
 
 **[English version → README.md](README.md)**
 

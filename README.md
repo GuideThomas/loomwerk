@@ -1,8 +1,16 @@
 # Loomwerk
 
+[![npm](https://img.shields.io/npm/v/loomwerk)](https://www.npmjs.com/package/loomwerk)
+[![CI](https://github.com/GuideThomas/loomwerk/actions/workflows/ci.yml/badge.svg)](https://github.com/GuideThomas/loomwerk/actions)
+[![license](https://img.shields.io/badge/license-AGPL--3.0--only%20%7C%20commercial-blue)](LICENSE)
+
 > An open innovation engine: Loomwerk breeds ideas from the tensions in your
 > own knowledge sources, culls 90% of them on purpose, learns your taste from
 > your decisions — and matures the survivors into long-running threads.
+
+```bash
+npx loomwerk   # → http://127.0.0.1:7791
+```
 
 **[Deutsche Fassung → README.de.md](README.de.md)**
 
@@ -94,13 +102,18 @@ Requirements: Node ≥ 20, any OpenAI-compatible LLM endpoint (OpenAI,
 OpenRouter, a local Ollama, your own gateway).
 
 ```bash
+LOOMWERK_LLM_BASE_URL=https://api.openai.com/v1 \
+LOOMWERK_LLM_API_KEY=sk-… \
+npx loomwerk
+```
+
+Or from source:
+
+```bash
 git clone https://github.com/GuideThomas/loomwerk
 cd loomwerk
 npm install
 npm run build
-
-LOOMWERK_LLM_BASE_URL=https://api.openai.com/v1 \
-LOOMWERK_LLM_API_KEY=sk-… \
 npm start
 ```
 
