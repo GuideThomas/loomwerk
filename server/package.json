@@ -6,8 +6,9 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "cycle": "tsx src/scripts/cycle-cli.ts",
     "build": "tsc",
-    "test": "tsx src/scripts/smoketest.ts"
+    "test": "tsx src/scripts/smoketest.ts && tsx src/scripts/engine-smoketest.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.4.1",
