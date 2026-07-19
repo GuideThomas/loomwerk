@@ -1,4 +1,5 @@
 import type { Database } from 'better-sqlite3';
+import type { Provider } from './provider.js';
 
 // A seed is an observed *tension* — the raw material of the engine. Sources
 // (connectors) produce seeds; the pulse turns fresh ones into hypotheses.
@@ -22,10 +23,18 @@ export interface Seed {
   refs: Record<string, unknown>;
 }
 
+// Context handed to every connector: the database (for per-source caches
+// like the markdown embedding index) and the LLM provider (may be null —
+// connectors that need embeddings must degrade to "no seeds", not crash).
+export interface SourceContext {
+  db: Database;
+  provider: Provider | null;
+}
+
 export interface SeedSource {
   kind: string;
   name: string;
-  detect(): Promise<Seed[]>;
+  detect(ctx: SourceContext): Promise<Seed[]>;
 }
 
 // Volatile fragments (dates, big numbers) are stripped before comparison so
@@ -62,7 +71,7 @@ export function existingSeedKeys(db: Database): Set<string> {
 export const demoSource: SeedSource = {
   kind: 'demo',
   name: 'Demo tensions',
-  detect() {
+  detect(_ctx: SourceContext) {
     const seeds: Seed[] = [
       {
         key: 'demo:notes:sourdough-x-fermentation-sensors',
