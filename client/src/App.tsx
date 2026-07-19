@@ -168,7 +168,7 @@ export default function App() {
             <>
               {screen === 'inbox' && <Inbox onChanged={refreshHealth} />}
               {screen === 'threads' && <Threads maxDepth={health?.maxThreadDepth ?? 5} onChanged={refreshHealth} />}
-              {screen === 'balance' && <Balance />}
+              {screen === 'balance' && <Balance health={health} />}
               {screen === 'sources' && <Sources health={health} onChanged={refreshHealth} />}
               {screen === 'run' && <RunView health={health} onChanged={refreshHealth} />}
               {screen === 'onboarding' && (

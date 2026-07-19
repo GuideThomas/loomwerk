@@ -52,6 +52,8 @@ export interface Run {
   ok: number | null;
   counts: string;
   llm_requests: number;
+  tokens_in: number;
+  tokens_out: number;
   cost_usd: number;
   error: string | null;
 }
@@ -62,6 +64,8 @@ export interface Balance {
   successRate: number;
   nuggetRate: number;
   llmRequests: number;
+  tokensIn: number;
+  tokensOut: number;
   costUsd: number;
   cycles: number;
 }
@@ -69,7 +73,15 @@ export interface Balance {
 export interface Health {
   ok: boolean;
   version: string;
-  provider: { configured: boolean; baseUrl?: string; models?: Record<string, string>; dailyRequestCap?: number };
+  provider: {
+    configured: boolean;
+    baseUrl?: string;
+    models?: Record<string, string>;
+    dailyRequestCap?: number;
+    dailyTokenCap?: number;
+    pricingConfigured?: boolean;
+  };
+  today: { requests: number; tokens: number; costMeasured: number; costPriced: number };
   maxThreadDepth: number;
   sourceCount: number;
   openProvocations: number;

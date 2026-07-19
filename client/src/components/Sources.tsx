@@ -122,6 +122,24 @@ export default function Sources({ health, onChanged }: { health: Health | null; 
           </span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid var(--line)' }}>
+          <span style={{ fontSize: 12.5 }}>{t('sources.token_cap')}</span>
+          <span className="mono" style={{ fontSize: 12, color: 'var(--dim)' }}>
+            {health?.provider.dailyTokenCap ? health.provider.dailyTokenCap.toLocaleString() : t('sources.off_label')}
+          </span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid var(--line)' }}>
+          <span style={{ fontSize: 12.5 }}>{t('sources.requests_today')}</span>
+          <span className="mono" style={{ fontSize: 12, color: 'var(--dim)' }}>
+            {health ? `${health.today.requests} · ${health.today.tokens.toLocaleString()} tok` : '—'}
+          </span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid var(--line)' }}>
+          <span style={{ fontSize: 12.5 }}>{t('sources.pricing')}</span>
+          <span className="mono" style={{ fontSize: 11, color: health?.provider.pricingConfigured ? 'var(--amber)' : 'var(--faint)' }}>
+            {health?.provider.pricingConfigured ? t('sources.pricing_on') : t('sources.pricing_off')}
+          </span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid var(--line)' }}>
           <span style={{ fontSize: 12.5 }}>{t('sources.models')}</span>
           <span className="mono" style={{ fontSize: 11, color: 'var(--dim)', textAlign: 'right' }}>
             {health?.provider.configured && health.provider.models

@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { api, type Balance as BalanceData } from '../api';
+import { api, type Balance as BalanceData, type Health } from '../api';
 import { Panel } from './shared';
+
+function fmtTokens(n: number): string {
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+  return String(n);
+}
 
 // The honest self-audit. All numbers come from the server's real
 // accounting — no estimates, no placeholder metrics.
@@ -17,7 +23,7 @@ const CAT_COLOR: Record<string, string> = {
   open: 'var(--dim)',
 };
 
-export default function Balance() {
+export default function Balance({ health }: { health: Health | null }) {
   const { t } = useTranslation();
   const [data, setData] = useState<BalanceData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -91,8 +97,19 @@ export default function Balance() {
             <span>{data.llmRequests}</span>
           </div>
           <div className="mono" style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '5px 0', borderTop: '1px solid var(--line)' }}>
+            <span style={{ color: 'var(--dim)' }}>{t('balance.tokens')}</span>
+            <span>{fmtTokens(data.tokensIn)} / {fmtTokens(data.tokensOut)}</span>
+          </div>
+          <div className="mono" style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '5px 0', borderTop: '1px solid var(--line)' }}>
             <span style={{ color: 'var(--dim)' }}>{t('balance.total_spend')}</span>
-            <span>${data.costUsd.toFixed(2)}</span>
+            <span>${data.costUsd.toFixed(data.costUsd > 0 && data.costUsd < 0.1 ? 4 : 2)}</span>
+          </div>
+          <div style={{ fontSize: 10.5, color: 'var(--faint)', paddingTop: 8, lineHeight: 1.5 }}>
+            {data.costUsd > 0
+              ? health?.provider.pricingConfigured
+                ? t('balance.spend_note_priced')
+                : t('balance.spend_note_measured')
+              : t('balance.spend_note_none')}
           </div>
         </Panel>
         <button className="btn btn-ghost" style={{ textAlign: 'center', padding: '11px 0' }} onClick={exportCsv}>

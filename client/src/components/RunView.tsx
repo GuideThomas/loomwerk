@@ -120,7 +120,8 @@ export default function RunView({ health, onChanged }: { health: Health | null; 
                     </span>
                   </div>
                   <div className="mono" style={{ fontSize: 11, color: 'var(--dim)' }}>
-                    {r.llm_requests} {t('run.requests')}
+                    {r.llm_requests} {t('run.requests')} · {r.tokens_in + r.tokens_out} tok
+                    {r.cost_usd > 0 ? ` · $${r.cost_usd.toFixed(4)}` : ''}
                   </div>
                 </div>
                 <div style={{ fontSize: 12.5, color: 'var(--dim)', marginTop: 4 }}>{t(`run.stage_desc.${r.stage}`, { defaultValue: '' })}</div>
