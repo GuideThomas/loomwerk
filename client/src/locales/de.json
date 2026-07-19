@@ -1,23 +1,147 @@
 {
   "app": {
-    "tagline": "Ideen, gezüchtet und ausgesiebt."
+    "tagline": "Open-Source-Innovationsmaschine"
   },
   "nav": {
-    "provocations": "Provokationen",
+    "inbox": "Provokationen",
     "threads": "Fäden",
     "balance": "Bilanz",
-    "sources": "Quellen"
+    "sources": "Quellen",
+    "run": "Lauf",
+    "onboarding": "Einrichtung"
   },
-  "provocations": {
-    "empty": "Keine offenen Provokationen. Der nächste Zyklus bringt Überlebende — oder nichts, auch das ist eine Antwort.",
+  "stages": {
+    "tension": "Spannung",
+    "hypothesis": "Hypothese",
+    "provocation": "Provokation",
+    "thread": "Faden",
+    "action": "Handlung"
+  },
+  "screens": {
+    "inbox": { "title": "Provokationen", "sub": "Überlebende Ideen des letzten Zyklus. 90 % wurden bewusst aussortiert — diese haben sich ihren Platz verdient." },
+    "threads": { "title": "Fäden", "sub": "Langlebige Ideen, die über Zyklen hinweg reifen. Tiefe ist das Signal." },
+    "balance": { "title": "Bilanz", "sub": "Eine ehrliche Selbstprüfung. Erfolg ist selten — miss die Auslese, nicht die Menge." },
+    "sources": { "title": "Quellen", "sub": "Woraus Spannungen gezogen werden. Verbinde, was du ohnehin liest und schreibst." },
+    "run": { "title": "Lauf", "sub": "Die Pipeline als Build-Protokoll: Pulse → Critic → Fitness → Weave." },
+    "onboarding": { "title": "Einrichtung", "sub": "Drei Schritte: Quelle verbinden, LLM mit Budgetgrenze angeben, ersten Zyklus starten." }
+  },
+  "common": {
+    "theme_light": "Hell",
+    "theme_dark": "Dunkel",
+    "taste": "Geschmack",
     "loading": "Lädt…",
+    "error": "Etwas ist schiefgelaufen: {{message}}",
+    "idle": "Bereit",
+    "running": "Läuft",
+    "open_count": "{{open}} offen · {{total}} gesamt",
+    "awaiting": "{{n}} zu entscheiden"
+  },
+  "inbox": {
+    "view_card": "Karten",
+    "view_row": "Zeilen",
     "promote": "Befördern",
     "dismiss": "Verwerfen",
     "love": "Gefällt mir",
-    "dismissReason": "Warum verwerfen? (optional, trainiert den Anti-Geschmack)"
+    "loved": "Favorit",
+    "promoted": "Zur Handlung befördert",
+    "promoted_short": "Befördert",
+    "dismiss_prompt": "Mit Begründung verwerfen",
+    "reason_custom": "Anderer Grund…",
+    "reason_cancel": "Abbrechen",
+    "reasons": ["Zu inkrementell", "Nicht machbar", "Nicht mein Geschmack", "Duplikat", "Schwach belegt"],
+    "verdict_confirmed": "Bestätigt",
+    "verdict_refuted": "Widerlegt",
+    "empty_title": "Eingang leer",
+    "empty_body": "Jede Provokation wurde bearbeitet. Der nächste Zyklus bringt Überlebende — oder nichts, auch das ist eine Antwort.",
+    "col_provocation": "Provokation",
+    "col_scores": "Werte",
+    "col_verdict": "Beleg",
+    "col_action": "Entscheiden",
+    "score_nov": "NEU",
+    "score_val": "WRT",
+    "score_fea": "MCH",
+    "score_sur": "ÜBR"
   },
-  "common": {
-    "language": "Sprache",
-    "error": "Etwas ist schiefgelaufen: {{message}}"
+  "threads": {
+    "state_active": "Aktiv",
+    "state_dormant": "Ruhend",
+    "state_ripe": "Reif",
+    "depth": "Tiefe",
+    "graduate_hint": "Dieser Faden ist reif. Wandle den letzten Schritt in eine konkrete Handlung um.",
+    "graduate": "Zur Handlung befördern",
+    "graduated": "Befördert ✓",
+    "empty": "Noch keine Fäden. Verfolge eine Provokation weiter oder lass die Weave-Stufe einen aus den stärksten Überlebenden säen."
+  },
+  "balance": {
+    "funnel_title": "Alle Ideen",
+    "ideas": "Ideen",
+    "success_rate": "Erfolgsquote",
+    "nugget_rate": "Nugget-Quote",
+    "wins": "Treffer",
+    "llm_requests": "LLM-Requests",
+    "cycles": "Lauf-Tage",
+    "total_spend": "Erfasste Ausgaben",
+    "export_csv": "CSV exportieren",
+    "cat": {
+      "win": "Treffer",
+      "nugget": "Nugget",
+      "refuted": "Widerlegt",
+      "duplicate": "Duplikat",
+      "gate": "Am Gate verworfen",
+      "culled": "Aussortiert",
+      "open": "Offen"
+    }
+  },
+  "sources": {
+    "add_title": "Quelle hinzufügen",
+    "kind": "Typ",
+    "name": "Name",
+    "path_label": "Pfad",
+    "url_label": "Feed-URL",
+    "add": "Quelle hinzufügen",
+    "on": "An",
+    "off": "Aus",
+    "delete": "Löschen",
+    "last_run": "letzter Lauf",
+    "never": "nie",
+    "empty": "Noch keine Quellen — die Engine nutzt gebündelte Demo-Spannungen, bis du eine verbindest.",
+    "engine_title": "Engine-Einstellungen",
+    "engine_note": "Konfiguration über Umgebungsvariablen — siehe README. Die tägliche Request-Grenze ist ein hartes Limit.",
+    "cap": "Tägliches LLM-Limit",
+    "requests_today": "Requests heute",
+    "models": "Modelle",
+    "webhook_hint": "Saaten von überall pushen: POST /api/seeds mit { key, tension }."
+  },
+  "run": {
+    "trigger": "Zyklus jetzt starten",
+    "in_flight": "Zyklus läuft…",
+    "no_provider": "Kein LLM-Provider konfiguriert — setze LOOMWERK_LLM_BASE_URL und LOOMWERK_LLM_API_KEY.",
+    "last_cycle": "Letzter Zyklus",
+    "requests": "Requests",
+    "done": "Fertig",
+    "failed": "Fehlgeschlagen",
+    "empty": "Noch keine Läufe. Starte einen Zyklus, um die Pipeline arbeiten zu sehen.",
+    "history": "Lauf-Historie",
+    "stage_desc": {
+      "pulse": "Rohe Spannungen aus allen verbundenen Quellen ziehen und Kandidaten züchten.",
+      "critic": "Pre-Screen, Fakten-Gate, Dubletten-Gate, Judge, Machbarkeits-Floor, MAP-Elites.",
+      "fitness": "Überlebende einbetten und den Geschmack aus deinen Entscheidungen neu lernen.",
+      "weave": "Fäden aus den stärksten Überlebenden säen und um einen Schritt vertiefen."
+    }
+  },
+  "onboarding": {
+    "steps": ["Quelle verbinden", "LLM + Budget", "Erster Zyklus"],
+    "connect_title": "Wissensquelle verbinden",
+    "connect_sub": "Loomwerk züchtet Ideen aus dem, was du ohnehin liest und schreibst. Wähle eine zum Start — oder überspringe und nutze die Demo-Spannungen.",
+    "llm_title": "LLM angeben",
+    "llm_sub": "Jeder OpenAI-kompatible Endpunkt, konfiguriert über die Umgebung. Die tägliche Request-Grenze ist ein hartes Limit.",
+    "llm_ok": "Provider konfiguriert",
+    "llm_missing": "Noch nicht konfiguriert. Starte den Server mit:",
+    "demo_title": "Ersten Zyklus starten",
+    "demo_sub": "Ein voller Durchlauf — Pulse züchtet, der Critic siebt aus, Fitness lernt, Weave reift. Sieh in der Lauf-Ansicht zu.",
+    "run_first": "Ersten Zyklus starten",
+    "back": "Zurück",
+    "next": "Weiter",
+    "finish": "Fertigstellen"
   }
 }

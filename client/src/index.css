@@ -1,7 +1,109 @@
 @import "tailwindcss";
 
-/* Placeholder styling only — the real design system (precision-instrument
-   look, light/dark) lands in the UI phase. */
-:root {
-  font-family: ui-sans-serif, system-ui, sans-serif;
+/* Loomwerk design tokens — precision instrument. Ported from the design
+   brief implementation (docs/design-brief.md): near-black / paper-white
+   base, one amber signal color, hairline rules, tabular numerals. */
+
+:root, [data-theme="dark"] {
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --bg: oklch(0.17 0.006 70);
+  --panel: oklch(0.205 0.006 70);
+  --panel-2: oklch(0.248 0.006 70);
+  --fg: oklch(0.94 0.004 85);
+  --dim: oklch(0.66 0.006 80);
+  --faint: oklch(0.5 0.006 80);
+  --line: oklch(0.29 0.006 70);
+  --line-2: oklch(0.37 0.006 70);
+  --amber: oklch(0.8 0.15 72);
+  --amber-soft: oklch(0.8 0.15 72 / 0.14);
+  --on-amber: oklch(0.17 0.006 70);
 }
+
+[data-theme="light"] {
+  --bg: oklch(0.955 0.004 85);
+  --panel: oklch(0.995 0.002 85);
+  --panel-2: oklch(0.925 0.004 85);
+  --fg: oklch(0.22 0.006 70);
+  --dim: oklch(0.44 0.006 78);
+  --faint: oklch(0.6 0.006 78);
+  --line: oklch(0.865 0.005 82);
+  --line-2: oklch(0.78 0.006 82);
+  --amber: oklch(0.62 0.16 58);
+  --amber-soft: oklch(0.62 0.16 58 / 0.1);
+  --on-amber: oklch(0.995 0.002 85);
+}
+
+html, body, #root { margin: 0; padding: 0; height: 100%; }
+
+body {
+  font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+a { color: var(--amber); text-decoration: none; }
+a:hover { text-decoration: underline; }
+::selection { background: var(--amber-soft); }
+
+.mono { font-family: var(--mono); }
+
+/* mono uppercase micro-label, used everywhere in the instrument language */
+.label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.btn {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.btn:disabled { cursor: default; opacity: 0.5; }
+
+.btn-primary {
+  padding: 8px 16px;
+  background: var(--amber);
+  color: var(--on-amber);
+  font-weight: 600;
+}
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-ghost {
+  padding: 8px 16px;
+  border: 1px solid var(--line-2);
+  color: var(--dim);
+}
+.btn-ghost:hover { border-color: var(--fg); color: var(--fg); }
+
+.btn-amber-line {
+  padding: 9px 18px;
+  border: 1px solid var(--amber);
+  color: var(--amber);
+}
+.btn-amber-line:hover { background: var(--amber-soft); }
+
+.panel { border: 1px solid var(--line); background: var(--panel); }
+
+input[type="text"], input[type="url"] {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+input[type="range"] { accent-color: var(--amber); }
+
+@keyframes lw-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.pulsing { animation: lw-pulse 1.4s ease-in-out infinite; }

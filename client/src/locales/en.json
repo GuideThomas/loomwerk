@@ -1,23 +1,147 @@
 {
   "app": {
-    "tagline": "Ideas, bred and culled."
+    "tagline": "Open-source innovation engine"
   },
   "nav": {
-    "provocations": "Provocations",
+    "inbox": "Provocations",
     "threads": "Threads",
     "balance": "Balance",
-    "sources": "Sources"
+    "sources": "Sources",
+    "run": "Run",
+    "onboarding": "Setup"
   },
-  "provocations": {
-    "empty": "No open provocations. The next cycle will bring survivors — or nothing, which is also an answer.",
+  "stages": {
+    "tension": "Tension",
+    "hypothesis": "Hypothesis",
+    "provocation": "Provocation",
+    "thread": "Thread",
+    "action": "Action"
+  },
+  "screens": {
+    "inbox": { "title": "Provocations", "sub": "Surviving ideas from the last cycle. 90% were culled on purpose — these earned their place." },
+    "threads": { "title": "Threads", "sub": "Long-running ideas that keep maturing across cycles. Depth is the signal." },
+    "balance": { "title": "Balance", "sub": "An honest self-audit. Success is rare by design — measure the culling, not the volume." },
+    "sources": { "title": "Sources", "sub": "Where tensions are drawn from. Connect what you already read and write." },
+    "run": { "title": "Run", "sub": "The pipeline as a build log: Pulse → Critic → Fitness → Weave." },
+    "onboarding": { "title": "Setup", "sub": "Three steps: connect a source, point at an LLM with a budget cap, run a first cycle." }
+  },
+  "common": {
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "taste": "Taste",
     "loading": "Loading…",
+    "error": "Something went wrong: {{message}}",
+    "idle": "Idle",
+    "running": "Running",
+    "open_count": "{{open}} open · {{total}} total",
+    "awaiting": "{{n}} awaiting decision"
+  },
+  "inbox": {
+    "view_card": "Cards",
+    "view_row": "Rows",
     "promote": "Promote",
     "dismiss": "Dismiss",
     "love": "Love",
-    "dismissReason": "Why dismiss? (optional, trains the anti-taste model)"
+    "loved": "Loved",
+    "promoted": "Promoted to action",
+    "promoted_short": "Promoted",
+    "dismiss_prompt": "Dismiss with reason",
+    "reason_custom": "Other reason…",
+    "reason_cancel": "Cancel",
+    "reasons": ["Too incremental", "Not feasible", "Off my taste", "Duplicate", "Weak grounding"],
+    "verdict_confirmed": "Confirmed",
+    "verdict_refuted": "Refuted",
+    "empty_title": "Inbox clear",
+    "empty_body": "Every provocation has been triaged. The next cycle will bring survivors — or nothing, which is also an answer.",
+    "col_provocation": "Provocation",
+    "col_scores": "Scores",
+    "col_verdict": "Grounding",
+    "col_action": "Decide",
+    "score_nov": "NOV",
+    "score_val": "VAL",
+    "score_fea": "FEA",
+    "score_sur": "SUR"
   },
-  "common": {
-    "language": "Language",
-    "error": "Something went wrong: {{message}}"
+  "threads": {
+    "state_active": "Active",
+    "state_dormant": "Dormant",
+    "state_ripe": "Ripe",
+    "depth": "depth",
+    "graduate_hint": "This thread is ripe. Convert its final step into a concrete action.",
+    "graduate": "Graduate to action",
+    "graduated": "Graduated ✓",
+    "empty": "No threads yet. Pursue a provocation, or let the weave stage seed one from the strongest survivors."
+  },
+  "balance": {
+    "funnel_title": "All ideas",
+    "ideas": "ideas",
+    "success_rate": "Success rate",
+    "nugget_rate": "Nugget rate",
+    "wins": "wins",
+    "llm_requests": "LLM requests",
+    "cycles": "Run days",
+    "total_spend": "Recorded spend",
+    "export_csv": "Export CSV",
+    "cat": {
+      "win": "Win",
+      "nugget": "Nugget",
+      "refuted": "Refuted",
+      "duplicate": "Duplicate",
+      "gate": "Gate-culled",
+      "culled": "Culled",
+      "open": "Open"
+    }
+  },
+  "sources": {
+    "add_title": "Add source",
+    "kind": "Kind",
+    "name": "Name",
+    "path_label": "Path",
+    "url_label": "Feed URL",
+    "add": "Add source",
+    "on": "On",
+    "off": "Off",
+    "delete": "Delete",
+    "last_run": "last run",
+    "never": "never",
+    "empty": "No sources yet — the engine falls back to bundled demo tensions until you connect one.",
+    "engine_title": "Engine settings",
+    "engine_note": "Set via environment variables — see the README. The daily request cap is a hard stop.",
+    "cap": "Daily LLM cap",
+    "requests_today": "Requests today",
+    "models": "Models",
+    "webhook_hint": "Push seeds from anywhere: POST /api/seeds with { key, tension }."
+  },
+  "run": {
+    "trigger": "Run cycle now",
+    "in_flight": "Cycle running…",
+    "no_provider": "No LLM provider configured — set LOOMWERK_LLM_BASE_URL and LOOMWERK_LLM_API_KEY.",
+    "last_cycle": "Last cycle",
+    "requests": "requests",
+    "done": "Done",
+    "failed": "Failed",
+    "empty": "No runs yet. Trigger a cycle to see the pipeline work.",
+    "history": "Run history",
+    "stage_desc": {
+      "pulse": "Draw raw tensions from every connected source and breed candidates.",
+      "critic": "Pre-screen, fact gate, duplicate gate, judge, feasibility floor, MAP-elites.",
+      "fitness": "Embed survivors and re-learn taste from your decisions.",
+      "weave": "Seed threads from the strongest survivors and deepen them one step."
+    }
+  },
+  "onboarding": {
+    "steps": ["Connect source", "LLM + budget", "First cycle"],
+    "connect_title": "Connect a knowledge source",
+    "connect_sub": "Loomwerk breeds ideas from what you already read and write. Pick one to start — or skip and use the bundled demo tensions.",
+    "llm_title": "Point at an LLM",
+    "llm_sub": "Any OpenAI-compatible endpoint, configured via environment. The daily request cap is a hard stop.",
+    "llm_ok": "Provider configured",
+    "llm_missing": "Not configured yet. Start the server with:",
+    "demo_title": "Run a first cycle",
+    "demo_sub": "One full pass — Pulse breeds, the Critic culls, Fitness learns, Weave matures. Watch it in the Run view.",
+    "run_first": "Run first cycle",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish"
   }
 }
