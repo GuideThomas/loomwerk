@@ -58,7 +58,9 @@ export interface CreateInput {
   createdBy?: Actor;
   // Engine output enters as 'candidate' and has to survive the critic.
   // Humans may drop an idea straight into the inbox as 'provocation'.
-  status?: 'candidate' | 'provocation';
+  // 'dismissed' is used by the taste pre-filter: clearly-rejected material is
+  // still recorded (dedup ledger, audit) but never reaches critic or inbox.
+  status?: 'candidate' | 'provocation' | 'dismissed';
 }
 
 export function createHypothesis(db: Database, input: CreateInput): Hypothesis {
