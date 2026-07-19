@@ -31,9 +31,15 @@ const STAGE_MAP: Record<Screen, string | 'all' | null> = {
 };
 const STAGES = ['tension', 'hypothesis', 'provocation', 'thread', 'action'];
 
+// Deep-linkable screens: /?screen=balance opens straight into a view.
+function initialScreen(): Screen {
+  const q = new URLSearchParams(window.location.search).get('screen');
+  return NAV.some(([k]) => k === q) ? (q as Screen) : 'inbox';
+}
+
 export default function App() {
   const { t, i18n } = useTranslation();
-  const [screen, setScreen] = useState<Screen>('inbox');
+  const [screen, setScreen] = useState<Screen>(initialScreen);
   const [theme, setTheme] = useState<'dark' | 'light'>(
     (localStorage.getItem('loomwerk.theme') as 'dark' | 'light') ?? 'dark',
   );
@@ -49,8 +55,11 @@ export default function App() {
       .health()
       .then((h) => {
         setHealth(h);
-        // Fresh install → start in the setup flow, not an empty inbox.
-        if (h.totalHypotheses === 0 && h.sourceCount === 0) setScreen('onboarding');
+        // Fresh install → start in the setup flow, not an empty inbox
+        // (unless a deep link asked for a specific screen).
+        if (h.totalHypotheses === 0 && h.sourceCount === 0 && !new URLSearchParams(window.location.search).get('screen')) {
+          setScreen('onboarding');
+        }
       })
       .catch(() => setHealth(null))
       .finally(() => setBooted(true));
