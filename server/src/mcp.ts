@@ -9,6 +9,6 @@ import { getDb } from './db.js';
 import { buildMcpServer } from './mcp/server.js';
 
 const db = getDb();
-const server = buildMcpServer(db, '0.2.0');
+const server = buildMcpServer(db, '0.3.0');
 await server.connect(new StdioServerTransport());
 console.error('[loomwerk-mcp] ready (stdio)');

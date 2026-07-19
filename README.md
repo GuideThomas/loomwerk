@@ -148,11 +148,25 @@ for. Writing your own connector is ~50 lines; see
 ## Cost discipline
 
 Three model tiers (`cheap` for breeding and pre-screening, `judge` for
-scoring and deepening, `embed` for duplicates and taste), a **hard daily
-request cap** that survives restarts, and clean stops on any upstream 429.
-A stuck loop should cost cents, not a monthly budget. Every pipeline stage
-records an honest run row — counts, requests, failures — and the Balance
-screen is computed from those rows, never estimated.
+scoring and deepening, `embed` for duplicates and taste), **hard daily
+caps on requests and optionally tokens** that survive restarts, and clean
+stops on any upstream 429. A stuck loop should cost cents, not a monthly
+budget.
+
+Accounting is honest about what an OpenAI-compatible endpoint can and
+cannot tell you:
+
+- **Tokens** are tracked always and everywhere — every endpoint reports
+  usage. Per stage, per run, and in the balance sheet.
+- **Dollars** come from exactly two sources, never a built-in guess:
+  - *measured* — if your gateway reports real cost with the response
+    (OpenRouter's `usage.cost`, LiteLLM's `x-litellm-response-cost`
+    header), Loomwerk records it as-is;
+  - *priced* — if you configure `LOOMWERK_PRICE_*` rates ($/1M tokens per
+    tier), cost is computed from your rates and labeled as such.
+  A call with measured cost is never additionally priced. Plain OpenAI or
+  Ollama endpoints report no prices — then the balance shows tokens and
+  says why the dollar figure is absent.
 
 ## Configuration
 
@@ -163,7 +177,10 @@ screen is computed from those rows, never estimated.
 | `LOOMWERK_MODEL_CHEAP` | `gpt-4o-mini` | Breeding + pre-screen tier |
 | `LOOMWERK_MODEL_JUDGE` | cheap tier | Scoring + thread deepening tier |
 | `LOOMWERK_MODEL_EMBED` | `text-embedding-3-small` | Duplicate gate + taste model |
-| `LOOMWERK_DAILY_LLM_REQUESTS` | `300` | Hard daily cap across all stages |
+| `LOOMWERK_DAILY_LLM_REQUESTS` | `300` | Hard daily request cap across all stages |
+| `LOOMWERK_DAILY_LLM_TOKENS` | off | Optional hard daily token cap (guards against huge prompts) |
+| `LOOMWERK_PRICE_CHEAP` / `LOOMWERK_PRICE_JUDGE` | unset | `$in,$out` per 1M tokens, e.g. `0.15,0.60` — enables rate-priced cost |
+| `LOOMWERK_PRICE_EMBED` | unset | `$in` per 1M tokens for the embed tier |
 | `LOOMWERK_CYCLE_HOUR` | unset | Set 0–23 for one automatic cycle per day |
 | `LOOMWERK_PORT` / `LOOMWERK_HOST` | `7791` / `127.0.0.1` | Bind address |
 | `LOOMWERK_TOKEN` | unset | Bearer token for the API (set it when exposing beyond localhost) |
