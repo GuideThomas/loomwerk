@@ -12,6 +12,9 @@ import {
   type Signal,
 } from '../lib/hypotheses.js';
 import { getThreadDetail, listThreads } from '../lib/threads.js';
+import { listRuns } from '../lib/runs.js';
+import { runCycle } from '../engine/cycle.js';
+import { createOpenAiProvider, providerConfigFromEnv } from '../engine/provider.js';
 import { config } from '../config.js';
 
 const SIGNALS: Signal[] = ['promoted', 'pursued', 'ignored', 'dismissed', 'loved'];
@@ -99,6 +102,28 @@ export function apiRouter(db: Database): Router {
 
   r.get('/actions', (_req, res) => {
     res.json(db.prepare('SELECT * FROM actions ORDER BY id DESC LIMIT 200').all());
+  });
+
+  r.get('/runs', (_req, res) => {
+    res.json(listRuns(db));
+  });
+
+  // Manual cycle trigger. Long-running, so it answers 202 immediately —
+  // progress lands in the runs table (GET /api/runs).
+  let cycleInFlight = false;
+  r.post('/engine/cycle', (_req, res) => {
+    const cfg = providerConfigFromEnv();
+    if (!cfg) {
+      throw new ApiError(409, 'no LLM provider configured (set LOOMWERK_LLM_BASE_URL and LOOMWERK_LLM_API_KEY)');
+    }
+    if (cycleInFlight) throw new ApiError(409, 'a cycle is already running');
+    cycleInFlight = true;
+    void runCycle(db, createOpenAiProvider(db, cfg))
+      .catch((e: Error) => console.error('[engine] cycle failed:', e.message))
+      .finally(() => {
+        cycleInFlight = false;
+      });
+    res.status(202).json({ started: true });
   });
 
   // Express 5 forwards thrown errors from sync handlers automatically.

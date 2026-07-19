@@ -5,12 +5,14 @@ import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { getDb } from './db.js';
 import { apiRouter } from './routes/api.js';
+import { startScheduler } from './engine/scheduler.js';
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
 
 const db = getDb();
 app.use('/api', apiRouter(db));
+startScheduler(db);
 
 // Serve the built client if it exists (single-process deployment). During
 // development the Vite dev server proxies /api instead.
