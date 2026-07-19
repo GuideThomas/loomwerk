@@ -29,11 +29,35 @@ cost about $0.10/day; of 227 bred ideas, ~3% became direct wins and ~17%
 yielded a usable nugget.** Most ideas die. That is not a bug — the entire
 design exists to make the dying cheap and the surviving trustworthy.
 
+![The provocation inbox](docs/screenshots/inbox.png)
+
 ## The mental model
 
 ```
 TENSION  →  HYPOTHESIS  →  PROVOCATION  →  THREAD  →  ACTION
  (seed)     (variation)     (curated)     (matured)   (yours)
+```
+
+```mermaid
+flowchart TD
+  MD[Markdown vaults] --> P
+  RSS[RSS feeds] --> P
+  LOG[JSONL logs] --> P
+  WH[Webhook ingest<br/>POST /api/seeds] --> P
+  P["PULSE — breed one hypothesis per tension (cheap tier)"] --> C1
+  subgraph CRITIC["CRITIC — five gates, cheap before expensive"]
+    direction TB
+    C1[pre-screen] --> C2[fact gate] --> C3["duplicate gate<br/>(incl. recently dismissed)"] --> C4["judge<br/>novelty · value · feasibility · surprise"] --> C5[feasibility floor] --> C6["MAP-elites<br/>best per niche survives"]
+  end
+  C6 -->|survivors| INBOX[Provocation inbox]
+  C6 -->|"~90% culled"| LEDGER[("dismissed<br/>dedup ledger + taste training")]
+  INBOX -->|"you decide:<br/>promote · dismiss + reason · love"| HUMAN{human verdict}
+  HUMAN -->|promote| ACTION[Action record — yours to execute]
+  HUMAN -->|taste signals| FIT["FITNESS — embed decisions,<br/>relearn taste centroids"]
+  FIT -.tilts selection.-> C6
+  FIT -.anti-taste block.-> P
+  INBOX --> WEAVE["WEAVE — seed + deepen threads<br/>one step per cycle, hard depth cap"]
+  WEAVE -->|ripe thread graduates| ACTION
 ```
 
 - **Tensions** come from connectors: two semantically close but unconnected
@@ -59,6 +83,10 @@ TENSION  →  HYPOTHESIS  →  PROVOCATION  →  THREAD  →  ACTION
 You stay the judge. The engine proposes; a human disposes; the machine never
 overturns a human decision (that invariant is enforced at the database
 layer, not by convention).
+
+| Threads mature step by step | The balance sheet is computed, not estimated |
+|---|---|
+| ![Threads](docs/screenshots/threads.png) | ![Balance](docs/screenshots/balance.png) |
 
 ## Quickstart
 
@@ -155,6 +183,24 @@ verdicts and numbers.
 - **Not a chat interface.** You don't talk to it; you judge its output.
 - **Not a volume play.** If a cycle produces zero survivors, that is a
   result, not a failure.
+
+## Roadmap
+
+Best-effort, in rough order:
+
+- **MCP server** — expose ingest / read / react as native tools, so Claude
+  and other MCP clients can feed the engine and harvest provocations from
+  inside a conversation. (Until then, the webhook covers any producer that
+  speaks HTTP.)
+- **Cross-source tensions** — pair a feed item against a vault note; today
+  tensions stay within one source.
+- **Grounding automation** — an automatic read-only fact-check pass before
+  ideas reach your inbox. The private predecessor runs this in production;
+  porting it is planned.
+- **Action export targets** — webhook, GitHub issue, plain todo.md, beyond
+  the built-in action records.
+- **More connectors** — IMAP newsletters, browser bookmarks. Contributions
+  welcome: [docs/connectors.md](docs/connectors.md).
 
 ## License
 

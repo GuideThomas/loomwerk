@@ -32,12 +32,17 @@ Treffer, ~17 % lieferten ein brauchbares Nugget.** Die meisten Ideen
 sterben. Das ist kein Fehler — das gesamte Design existiert, damit das
 Sterben billig und das Überleben vertrauenswürdig ist.
 
+![Der Provokationen-Eingang](docs/screenshots/inbox.png)
+
 ## Das Denkmodell
 
 ```
 SPANNUNG  →  HYPOTHESE  →  PROVOKATION  →  FADEN  →  HANDLUNG
   (Saat)     (Variation)    (kuratiert)   (gereift)   (deine)
 ```
+
+Das Flussdiagramm der Pipeline (mit allen Gates) steht im
+[englischen README](README.md#the-mental-model).
 
 - **Spannungen** kommen aus Connectoren: zwei semantisch nahe, aber
   unverbundene Notizen in deinem Vault, zwei Feed-Meldungen, die in
@@ -64,6 +69,10 @@ SPANNUNG  →  HYPOTHESE  →  PROVOKATION  →  FADEN  →  HANDLUNG
 Du bleibst die Jury. Die Maschine schlägt vor, der Mensch verfügt — und die
 Maschine überstimmt nie eine menschliche Entscheidung (diese Invariante ist
 auf Datenbankebene erzwungen, nicht per Konvention).
+
+| Fäden reifen Schritt für Schritt | Die Bilanz wird berechnet, nicht geschätzt |
+|---|---|
+| ![Fäden](docs/screenshots/threads.png) | ![Bilanz](docs/screenshots/balance.png) |
 
 ## Schnellstart
 
@@ -165,6 +174,24 @@ Funkeln — Gates, Verdikte und Zahlen.
   Output.
 - **Kein Mengen-Spiel.** Liefert ein Zyklus null Überlebende, ist das ein
   Ergebnis, kein Fehler.
+
+## Roadmap
+
+Best-effort, in grober Reihenfolge:
+
+- **MCP-Server** — Ingest / Lesen / Reagieren als native Tools, damit Claude
+  und andere MCP-Clients die Maschine direkt aus einem Gespräch füttern und
+  ernten können. (Bis dahin deckt der Webhook jeden Produzenten ab, der
+  HTTP spricht.)
+- **Quellenübergreifende Spannungen** — eine Feed-Meldung gegen eine
+  Vault-Notiz paaren; heute bleiben Spannungen innerhalb einer Quelle.
+- **Grounding-Automation** — ein automatischer read-only Fakten-Check,
+  bevor Ideen deinen Eingang erreichen. Der private Vorgänger betreibt das
+  produktiv; die Portierung ist geplant.
+- **Handlungs-Export** — Webhook, GitHub-Issue, todo.md, über die
+  eingebauten Handlungs-Einträge hinaus.
+- **Weitere Connectoren** — IMAP-Newsletter, Browser-Lesezeichen. Beiträge
+  willkommen: [docs/connectors.md](docs/connectors.md).
 
 ## Lizenz
 
