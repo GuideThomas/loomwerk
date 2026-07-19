@@ -1,6 +1,6 @@
 {
   "name": "loomwerk",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "private": true,
   "description": "Loomwerk — an open innovation engine that breeds, selects and matures ideas from your own knowledge sources.",
   "author": "Thomas Winkler",
