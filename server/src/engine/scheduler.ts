@@ -2,6 +2,7 @@ import type { Database } from 'better-sqlite3';
 import { runCycle } from './cycle.js';
 import { createOpenAiProvider, providerConfigFromEnv } from './provider.js';
 
+import { JETZT_SQL, tagInWien } from '../lib/zeit.js';
 // Built-in daily scheduler — no system cron needed. Set LOOMWERK_CYCLE_HOUR
 // (0-23, local time) to run one full cycle per day; leave it unset to
 // trigger cycles manually via the API. The last-run day is persisted so a
@@ -30,7 +31,10 @@ async function tick(db: Database, hour: number): Promise<void> {
   if (running) return;
   const now = new Date();
   if (now.getHours() !== hour) return;
-  const today = now.toISOString().slice(0, 10);
+  // Wiener Tag, nicht UTC-Tag: die Zeile darueber prueft mit getHours() die
+  // ORTS-Stunde. Mit einem UTC-Tagesschluessel liefen beide zwischen 00:00
+  // und 02:00 auseinander — der Lauf haette sich auf den Vortag gebucht.
+  const today = tagInWien(now);
   const last = db.prepare("SELECT value FROM settings WHERE key='cycle.lastRunDay'").get() as
     | { value: string }
     | undefined;
@@ -45,7 +49,7 @@ async function tick(db: Database, hour: number): Promise<void> {
   try {
     db.prepare(
       `INSERT INTO settings (key, value) VALUES ('cycle.lastRunDay', @v)
-       ON CONFLICT(key) DO UPDATE SET value=@v, updated_at=datetime('now')`,
+       ON CONFLICT(key) DO UPDATE SET value=@v, updated_at=${JETZT_SQL}`,
     ).run({ v: today });
     const summary = await runCycle(db, createOpenAiProvider(db, cfg));
     console.log('[scheduler] cycle done:', JSON.stringify(summary));

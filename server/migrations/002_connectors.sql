@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS source_index (
   mtime      INTEGER NOT NULL,             -- epoch ms of the indexed version
   meta       TEXT NOT NULL DEFAULT '{}',   -- JSON: title, topic, excerpt hash…
   vec        TEXT,                         -- JSON number[] embedding
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
   PRIMARY KEY (source_id, key)
 );
 
@@ -25,6 +25,6 @@ CREATE TABLE IF NOT EXISTS pending_seeds (
   tension     TEXT NOT NULL,
   refs        TEXT NOT NULL DEFAULT '{}',  -- JSON
   consumed_at TEXT,
-  created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
 CREATE INDEX IF NOT EXISTS idx_pending_seeds_open ON pending_seeds(consumed_at);

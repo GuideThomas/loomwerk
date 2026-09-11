@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { api, type Health, type Run } from '../api';
 import { Panel } from './shared';
 
+import { formatDatumZeit } from '../lib/zeit';
 // The pipeline as a build log. One cycle = the four newest stage rows;
 // history below. Triggering a cycle polls until the stages land.
 
@@ -79,7 +80,7 @@ export default function RunView({ health, onChanged }: { health: Health | null; 
           {error ? (
             <span style={{ color: 'var(--amber)' }}>{error}</span>
           ) : providerReady ? (
-            `${t('run.last_cycle')}: ${latest[0]?.started_at ?? '—'}`
+            `${t('run.last_cycle')}: ${formatDatumZeit(latest[0]?.started_at)}`
           ) : (
             t('run.no_provider')
           )}
@@ -140,7 +141,7 @@ export default function RunView({ health, onChanged }: { health: Health | null; 
           <Panel>
             {rest.map((r) => (
               <div key={r.id} className="mono" style={{ display: 'flex', gap: 14, padding: '8px 14px', borderBottom: '1px solid var(--line)', fontSize: 11, color: 'var(--dim)' }}>
-                <span style={{ color: 'var(--faint)', width: 130, flex: '0 0 auto' }}>{r.started_at}</span>
+                <span style={{ color: 'var(--faint)', width: 130, flex: '0 0 auto' }}>{formatDatumZeit(r.started_at)}</span>
                 <span style={{ width: 60, flex: '0 0 auto', textTransform: 'capitalize' }}>{r.stage}</span>
                 <span style={{ color: r.ok ? 'var(--dim)' : 'var(--amber)' }}>{r.error ?? fmtCounts(r.counts)}</span>
               </div>

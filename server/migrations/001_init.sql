@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS threads (
   summary          TEXT,
   status           TEXT NOT NULL DEFAULT 'open'
                      CHECK (status IN ('open','deepening','dormant','closed')),
-  created_at       TEXT NOT NULL DEFAULT (datetime('now')),
+  created_at       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
   last_deepened_at TEXT
 );
 
@@ -55,8 +55,8 @@ CREATE TABLE IF NOT EXISTS hypotheses (
   win_note         TEXT,   -- curated note on what this idea actually delivered
   created_by       TEXT NOT NULL DEFAULT 'engine'
                      CHECK (created_by IN ('human','engine')),
-  created_at       TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at       TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
+  updated_at       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
 CREATE INDEX IF NOT EXISTS idx_hypotheses_status  ON hypotheses(status);
 CREATE INDEX IF NOT EXISTS idx_hypotheses_thread  ON hypotheses(thread_id);
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS dispositions (
                      CHECK (signal IN ('promoted','pursued','ignored','dismissed','loved')),
   actor            TEXT NOT NULL DEFAULT 'human',   -- 'human' | 'engine'
   note             TEXT,
-  ts               TEXT NOT NULL DEFAULT (datetime('now'))
+  ts               TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
 CREATE INDEX IF NOT EXISTS idx_dispositions_hyp ON dispositions(hypothesis_id);
 
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS actions (
   export_ref       TEXT,   -- file path or webhook response id
   status           TEXT NOT NULL DEFAULT 'open'
                      CHECK (status IN ('open','done','cancelled')),
-  created_at       TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
 
 -- Statement embeddings, cached. SQLite has no vector type; a JSON array is
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS embeddings (
   model         TEXT NOT NULL,
   dim           INTEGER NOT NULL,
   vec           TEXT NOT NULL,             -- JSON number[]
-  created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
 
 -- Learned taste centroids (mean embedding per polarity of past decisions).
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS centroids (
   n           INTEGER NOT NULL,
   dim         INTEGER NOT NULL,
   vec         TEXT NOT NULL,               -- JSON number[]
-  updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
+  updated_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
 
 -- Registered knowledge sources (connectors). Config is connector-specific
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS sources (
   config      TEXT NOT NULL DEFAULT '{}',  -- JSON
   enabled     INTEGER NOT NULL DEFAULT 1,
   last_run_at TEXT,
-  created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
 
 -- One row per pipeline stage execution — feeds the run view and the balance
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS sources (
 CREATE TABLE IF NOT EXISTS runs (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   stage       TEXT NOT NULL,               -- pulse | critic | fitness | weave | review
-  started_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  started_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
   finished_at TEXT,
   ok          INTEGER,
   counts      TEXT NOT NULL DEFAULT '{}',  -- JSON: stage-specific counters
@@ -143,5 +143,5 @@ CREATE INDEX IF NOT EXISTS idx_runs_stage ON runs(stage, started_at);
 CREATE TABLE IF NOT EXISTS settings (
   key        TEXT PRIMARY KEY,
   value      TEXT NOT NULL,
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );

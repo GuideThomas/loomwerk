@@ -1,5 +1,6 @@
 import type { Database } from 'better-sqlite3';
 
+import { JETZT_SQL, tagInWien } from '../lib/zeit.js';
 // LLM access. One deliberate constraint: everything speaks the OpenAI wire
 // format, so any compatible endpoint works — OpenAI, a local Ollama, an
 // OpenRouter key, or a self-hosted gateway. No provider SDKs.
@@ -104,7 +105,9 @@ export interface DayStats {
 }
 
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  // Wiener Tag: als UTC-Tag rollten die Tages-Token- und Kostenzaehler erst
+  // um 02:00 Ortszeit statt um Mitternacht.
+  return tagInWien();
 }
 
 export function llmDayStats(db: Database): DayStats {
@@ -128,7 +131,7 @@ export function llmRequestsToday(db: Database): number {
 function saveDayStats(db: Database, stats: DayStats): void {
   db.prepare(
     `INSERT INTO settings (key, value) VALUES ('llm.day', @v)
-     ON CONFLICT(key) DO UPDATE SET value = @v, updated_at = datetime('now')`,
+     ON CONFLICT(key) DO UPDATE SET value = @v, updated_at = ${JETZT_SQL}`,
   ).run({ v: JSON.stringify(stats) });
 }
 
