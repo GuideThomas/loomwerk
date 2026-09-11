@@ -259,6 +259,33 @@ Created and maintained by **Thomas Winkler** — see [NOTICE](NOTICE).
 If you build on Loomwerk academically, [CITATION.cff](CITATION.cff) has you
 covered.
 
+## Zeit und Zeitzone
+
+**Gespeichert wird UTC, angezeigt wird Wien.** Zeitstempel stehen als ISO-8601 mit
+`Z` in der Datenbank (`2026-09-11T19:21:02Z`), die Oberfläche rechnet sie fest nach
+`Europe/Vienna` um — nicht in die Zone des Browsers.
+
+| | |
+|---|---|
+| **Schreiben** | `JETZT_SQL` aus [`server/src/lib/zeit.ts`](server/src/lib/zeit.ts) statt `CURRENT_TIMESTAMP` / `datetime('now')` |
+| **Anzeigen** | `formatDatumZeit()` & Co. aus [`client/src/lib/zeit.ts`](client/src/lib/zeit.ts) — nie `new Date(wert)` direkt |
+
+🚨 **Warum das so streng ist (Befund 11.09.2026):** `CURRENT_TIMESTAMP` schreibt UTC
+**ohne** Zonenkennung. `new Date(...)` liest so einen String als *Ortszeit* und zieht den
+Versatz ein zweites Mal ab; `toLocaleString` rechnet ihn wieder drauf. Übrig bleibt exakt
+der UTC-Wert — die Anzeige lag durchgängig zwei Stunden zu früh. Nicht die Systemzeit war
+falsch eingestellt, sondern die Kette aus fehlender Kennung und fehlender Zone.
+
+⚠️ **`Europe/Vienna`, nie ein fester Versatz.** Ab dem 25.10.2026 ist Wien GMT+1;
+ein verdrahtetes `+2` wäre ab dann wieder falsch.
+
+⚠️ **Datum-only-Felder nicht anfassen.** Ein fachlicher Kalendertag (`2026-09-11`) ist kein
+Zeitpunkt und darf durch keine Zonenrechnung wandern.
+
+Referenz-Umsetzung samt Prüfung (35 Fälle):
+`Projekte/Artikelanlage-Assistent/scripts/zeitzone.test.mjs`.
+Hergang und Messwerte: `CHRONIK.md`, 11.09.2026 Heimrechner.
+
 ## Contributing
 
 Maintained as a working system, not a product — issues and PRs are answered
