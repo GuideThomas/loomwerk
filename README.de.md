@@ -15,7 +15,7 @@ npx loomwerk   # → http://127.0.0.1:7791
 
 **[English version → README.md](README.md)**
 
-**Stand:** Oktober 2026 · v0.3.1
+**Stand:** Oktober 2026 · v0.3.2
 
 ---
 
