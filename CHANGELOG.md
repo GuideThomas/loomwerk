@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- **Build:** `server/dist` is now cleaned before compiling. The 0.3.1 npm
+  package still contained `server/dist/lib/zeit.js`, a stale, unused leftover
+  from before the helpers were renamed to `time.ts`.
+
 ## 0.3.1 — 2026-10-18
 
 ### Fixed
