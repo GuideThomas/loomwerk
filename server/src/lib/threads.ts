@@ -2,7 +2,7 @@ import type { Database } from 'better-sqlite3';
 import { ApiError, type Hypothesis } from './hypotheses.js';
 import { rankScore } from './scoring.js';
 
-import { JETZT_SQL } from '../lib/zeit.js';
+import { NOW_SQL } from '../lib/time.js';
 // Depth cap, learned the hard way: without it, the first generation of
 // threads grew to depth 9 without ever graduating, each step drifting
 // further from anything testable. At MAX_DEPTH a thread is 'closed' — ripe,
@@ -66,7 +66,7 @@ export function seedThreadsFromSurvivors(db: Database, maxNew = 2): number[] {
         .run(h.statement.slice(0, 120), h.rationale ?? null);
       const threadId = Number(t.lastInsertRowid);
       db.prepare(
-        `UPDATE hypotheses SET status='thread', thread_id=?, updated_at=${JETZT_SQL} WHERE id=?`,
+        `UPDATE hypotheses SET status='thread', thread_id=?, updated_at=${NOW_SQL} WHERE id=?`,
       ).run(threadId, h.id);
       created.push(threadId);
     }
@@ -120,7 +120,7 @@ export function deepenThread(db: Database, threadId: number, input: DeepenInput)
       );
     db.prepare(
       `UPDATE threads SET status='deepening', summary=COALESCE(?, summary),
-         last_deepened_at=${JETZT_SQL} WHERE id=?`,
+         last_deepened_at=${NOW_SQL} WHERE id=?`,
     ).run(input.summary ?? null, threadId);
     // Reaching the cap with this step? Conclude right away — no extra run
     // needed to notice the thread is ripe.

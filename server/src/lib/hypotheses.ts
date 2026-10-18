@@ -1,6 +1,6 @@
 import type { Database } from 'better-sqlite3';
 
-import { JETZT_SQL } from '../lib/zeit.js';
+import { NOW_SQL } from '../lib/time.js';
 // Hypothesis lifecycle service.
 //
 // Two invariants that everything else depends on:
@@ -171,8 +171,8 @@ export function reactToHypothesis(
         actionId = Number(action.lastInsertRowid);
         db.prepare(
           `UPDATE hypotheses SET status='promoted', promoted_action_id=?,
-             disposition='promoted', disposition_at=${JETZT_SQL},
-             updated_at=${JETZT_SQL} WHERE id=?`,
+             disposition='promoted', disposition_at=${NOW_SQL},
+             updated_at=${NOW_SQL} WHERE id=?`,
         ).run(actionId, id);
         break;
       }
@@ -188,16 +188,16 @@ export function reactToHypothesis(
         }
         db.prepare(
           `UPDATE hypotheses SET status='thread', thread_id=?,
-             disposition='pursued', disposition_at=${JETZT_SQL},
-             updated_at=${JETZT_SQL} WHERE id=?`,
+             disposition='pursued', disposition_at=${NOW_SQL},
+             updated_at=${NOW_SQL} WHERE id=?`,
         ).run(threadId, id);
         break;
       }
       case 'dismissed': {
         db.prepare(
           `UPDATE hypotheses SET status='dismissed',
-             disposition='dismissed', disposition_at=${JETZT_SQL},
-             updated_at=${JETZT_SQL} WHERE id=?`,
+             disposition='dismissed', disposition_at=${NOW_SQL},
+             updated_at=${NOW_SQL} WHERE id=?`,
         ).run(id);
         break;
       }
@@ -205,8 +205,8 @@ export function reactToHypothesis(
       case 'ignored': {
         // Pure taste signals — the hypothesis keeps its place in the funnel.
         db.prepare(
-          `UPDATE hypotheses SET disposition=?, disposition_at=${JETZT_SQL},
-             updated_at=${JETZT_SQL} WHERE id=?`,
+          `UPDATE hypotheses SET disposition=?, disposition_at=${NOW_SQL},
+             updated_at=${NOW_SQL} WHERE id=?`,
         ).run(signal, id);
         break;
       }
@@ -219,7 +219,7 @@ export function reactToHypothesis(
 export function setWinNote(db: Database, id: number, winNote: string | null): Hypothesis {
   getHypothesis(db, id); // 404 check
   db.prepare(
-    `UPDATE hypotheses SET win_note=?, updated_at=${JETZT_SQL} WHERE id=?`,
+    `UPDATE hypotheses SET win_note=?, updated_at=${NOW_SQL} WHERE id=?`,
   ).run(winNote, id);
   return getHypothesis(db, id);
 }

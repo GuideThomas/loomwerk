@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { api, type Health, type Source } from '../api';
 import { Panel } from './shared';
 
-import { formatDatumZeit } from '../lib/zeit';
+import { formatDateTime } from '../lib/time';
 // Source management: connect what you already read and write. The right
 // panel shows the engine's real knobs (environment-driven) — read-only on
 // purpose, so the UI never pretends to control what it doesn't.
@@ -60,7 +60,7 @@ export default function Sources({ health, onChanged }: { health: Health | null; 
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 14, fontWeight: 600 }}>{s.name}</div>
                   <div className="mono" style={{ fontSize: 10.5, color: 'var(--faint)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 320 }}>
-                    {summarize(s)} · {t('sources.last_run')}: {s.last_run_at ? formatDatumZeit(s.last_run_at) : t('sources.never')}
+                    {summarize(s)} · {t('sources.last_run')}: {s.last_run_at ? formatDateTime(s.last_run_at) : t('sources.never')}
                   </div>
                 </div>
               </div>

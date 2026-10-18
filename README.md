@@ -14,6 +14,8 @@ npx loomwerk   # → http://127.0.0.1:7791
 
 **[Deutsche Fassung → README.de.md](README.de.md)**
 
+**Last updated:** October 2026 · v0.3.1
+
 ---
 
 ## Why this exists
@@ -259,32 +261,20 @@ Created and maintained by **Thomas Winkler** — see [NOTICE](NOTICE).
 If you build on Loomwerk academically, [CITATION.cff](CITATION.cff) has you
 covered.
 
-## Zeit und Zeitzone
+## Time and time zones
 
-**Gespeichert wird UTC, angezeigt wird Wien.** Zeitstempel stehen als ISO-8601 mit
-`Z` in der Datenbank (`2026-09-11T19:21:02Z`), die Oberfläche rechnet sie fest nach
-`Europe/Vienna` um — nicht in die Zone des Browsers.
+Timestamps are stored as ISO-8601 UTC with a trailing `Z`
+(`2026-09-11T19:21:02Z`) and shown in **your browser's time zone**, in the UI
+language. The daily request/token counters and the automatic cycle
+(`LOOMWERK_CYCLE_HOUR`) use the **server's local zone** — set `TZ` (e.g.
+`TZ=America/New_York`) if the machine runs on UTC but you want a local day.
 
-| | |
-|---|---|
-| **Schreiben** | `JETZT_SQL` aus [`server/src/lib/zeit.ts`](server/src/lib/zeit.ts) statt `CURRENT_TIMESTAMP` / `datetime('now')` |
-| **Anzeigen** | `formatDatumZeit()` & Co. aus [`client/src/lib/zeit.ts`](client/src/lib/zeit.ts) — nie `new Date(wert)` direkt |
-
-🚨 **Warum das so streng ist (Befund 11.09.2026):** `CURRENT_TIMESTAMP` schreibt UTC
-**ohne** Zonenkennung. `new Date(...)` liest so einen String als *Ortszeit* und zieht den
-Versatz ein zweites Mal ab; `toLocaleString` rechnet ihn wieder drauf. Übrig bleibt exakt
-der UTC-Wert — die Anzeige lag durchgängig zwei Stunden zu früh. Nicht die Systemzeit war
-falsch eingestellt, sondern die Kette aus fehlender Kennung und fehlender Zone.
-
-⚠️ **`Europe/Vienna`, nie ein fester Versatz.** Ab dem 25.10.2026 ist Wien GMT+1;
-ein verdrahtetes `+2` wäre ab dann wieder falsch.
-
-⚠️ **Datum-only-Felder nicht anfassen.** Ein fachlicher Kalendertag (`2026-09-11`) ist kein
-Zeitpunkt und darf durch keine Zonenrechnung wandern.
-
-Referenz-Umsetzung samt Prüfung (35 Fälle):
-`Projekte/Artikelanlage-Assistent/scripts/zeitzone.test.mjs`.
-Hergang und Messwerte: `CHRONIK.md`, 11.09.2026 Heimrechner.
+For contributors: write timestamps with `NOW_SQL` from
+[`server/src/lib/time.ts`](server/src/lib/time.ts), never
+`CURRENT_TIMESTAMP` / `datetime('now')` (UTC without a zone marker, which
+`new Date(...)` misreads as local time); display them through
+[`client/src/lib/time.ts`](client/src/lib/time.ts), never `new Date(value)`
+on a raw database string.
 
 ## Contributing
 

@@ -1,7 +1,7 @@
 import type { Database } from 'better-sqlite3';
 import { llmDayStats, type DayStats } from '../engine/provider.js';
 
-import { JETZT_SQL } from '../lib/zeit.js';
+import { NOW_SQL } from '../lib/time.js';
 // Honest accounting per pipeline stage. Every stage execution leaves a row —
 // the run view and the balance sheet are built from this, not estimates.
 // Requests, tokens and cost are recorded as day-counter diffs around the
@@ -30,7 +30,7 @@ export function finishRun(
   const diff = (a: number, b: number) => Math.max(0, a - b);
   const sameDay = after.day === handle.before.day;
   db.prepare(
-    `UPDATE runs SET finished_at=${JETZT_SQL}, ok=?, counts=?, llm_requests=?,
+    `UPDATE runs SET finished_at=${NOW_SQL}, ok=?, counts=?, llm_requests=?,
        tokens_in=?, tokens_out=?, cost_usd=?, error=? WHERE id=?`,
   ).run(
     ok ? 1 : 0,

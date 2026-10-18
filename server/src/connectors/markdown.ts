@@ -6,7 +6,7 @@ import { cosine } from '../lib/taste.js';
 import { BudgetExceededError } from '../engine/provider.js';
 import type { Seed, SeedSource, SourceContext } from '../engine/seeds.js';
 
-import { JETZT_SQL } from '../lib/zeit.js';
+import { NOW_SQL } from '../lib/time.js';
 // Markdown / Obsidian connector.
 //
 // The idea: innovation seeds live BETWEEN notes, not inside one. Two notes
@@ -159,7 +159,7 @@ export function createMarkdownSource(sourceId: number, name: string, config: Mar
         const vec = await provider.embed(provider.models.embed, input);
         db.prepare(
           `INSERT INTO source_index (source_id, key, mtime, meta, vec) VALUES (@sid, @key, @mtime, @meta, @vec)
-           ON CONFLICT(source_id, key) DO UPDATE SET mtime=@mtime, meta=@meta, vec=@vec, updated_at=${JETZT_SQL}`,
+           ON CONFLICT(source_id, key) DO UPDATE SET mtime=@mtime, meta=@meta, vec=@vec, updated_at=${NOW_SQL}`,
         ).run({
           sid: sourceId,
           key: note.key,

@@ -1,6 +1,6 @@
 import type { Database } from 'better-sqlite3';
 
-import { JETZT_SQL } from '../lib/zeit.js';
+import { NOW_SQL } from '../lib/time.js';
 // Taste model. The human's decisions are the training signal: statement
 // embeddings of loved/promoted/pursued hypotheses form a positive centroid,
 // ignored/dismissed ones a negative centroid. A hypothesis' taste score is
@@ -38,7 +38,7 @@ function meanVec(vecs: number[][]): number[] {
 export function upsertEmbedding(db: Database, hypothesisId: number, model: string, vec: number[]): void {
   db.prepare(
     `INSERT INTO embeddings (hypothesis_id, model, dim, vec) VALUES (@id, @model, @dim, @vec)
-     ON CONFLICT(hypothesis_id) DO UPDATE SET model=@model, dim=@dim, vec=@vec, created_at=${JETZT_SQL}`,
+     ON CONFLICT(hypothesis_id) DO UPDATE SET model=@model, dim=@dim, vec=@vec, created_at=${NOW_SQL}`,
   ).run({ id: hypothesisId, model, dim: vec.length, vec: JSON.stringify(vec) });
 }
 
@@ -103,7 +103,7 @@ function storeCentroid(db: Database, kind: 'positive' | 'negative', model: strin
   const c = meanVec(vecs);
   db.prepare(
     `INSERT INTO centroids (kind, model, n, dim, vec) VALUES (@kind, @model, @n, @dim, @vec)
-     ON CONFLICT(kind) DO UPDATE SET model=@model, n=@n, dim=@dim, vec=@vec, updated_at=${JETZT_SQL}`,
+     ON CONFLICT(kind) DO UPDATE SET model=@model, n=@n, dim=@dim, vec=@vec, updated_at=${NOW_SQL}`,
   ).run({ kind, model, n: vecs.length, dim: c.length, vec: JSON.stringify(c) });
   return c;
 }
@@ -154,7 +154,7 @@ export function recomputeTaste(db: Database): TasteResult {
       const v = getEmbedding(db, id);
       if (!v) continue;
       const taste = (posC ? cosine(v, posC) : 0) - (negC ? cosine(v, negC) : 0);
-      db.prepare(`UPDATE hypotheses SET score_taste=?, updated_at=${JETZT_SQL} WHERE id=?`).run(taste, id);
+      db.prepare(`UPDATE hypotheses SET score_taste=?, updated_at=${NOW_SQL} WHERE id=?`).run(taste, id);
       scored++;
     }
     return { positive: pos.length, negative: neg.length, scored, model };

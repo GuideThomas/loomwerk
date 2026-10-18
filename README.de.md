@@ -15,6 +15,8 @@ npx loomwerk   # → http://127.0.0.1:7791
 
 **[English version → README.md](README.md)**
 
+**Stand:** Oktober 2026 · v0.3.1
+
 ---
 
 ## Warum es das gibt
@@ -245,6 +247,15 @@ proprietäre SaaS-Nutzung. Beiträge erfordern ein leichtgewichtiges
 
 Erdacht und gepflegt von **Thomas Winkler** — siehe [NOTICE](NOTICE).
 Für akademische Zitate: [CITATION.cff](CITATION.cff).
+
+## Zeit und Zeitzone
+
+Zeitstempel werden als ISO-8601 in UTC mit `Z` gespeichert
+(`2026-09-11T19:21:02Z`) und **in der Zeitzone deines Browsers** angezeigt, in
+der Sprache der Oberfläche. Die Tageszähler (Anfragen, Tokens) und der
+automatische Zyklus (`LOOMWERK_CYCLE_HOUR`) rechnen in der **Ortszeit des
+Servers** — läuft die Maschine auf UTC, setzt `TZ` (z. B. `TZ=Europe/Vienna`)
+den gewünschten Tag.
 
 ## Mitmachen
 

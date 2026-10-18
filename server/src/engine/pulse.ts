@@ -5,7 +5,7 @@ import { BudgetExceededError, extractJson, type Provider } from './provider.js';
 import { pickOperator, pulsePrompt } from './prompts.js';
 import { existingSeedKeys, normalizeSeedKey, type Seed, type SeedSource } from './seeds.js';
 
-import { JETZT_SQL } from '../lib/zeit.js';
+import { NOW_SQL } from '../lib/time.js';
 // Stage 1 — pulse (variation). Cheap tier, high volume, low expectations:
 // on its own this stage is a slop machine, and that is by design. The critic
 // exists precisely because 90% of what is bred here has to die.
@@ -71,7 +71,7 @@ export async function runPulse(
   for (const source of sources) {
     try {
       seeds.push(...(await source.detect({ db, provider })));
-      db.prepare(`UPDATE sources SET last_run_at=${JETZT_SQL} WHERE name=?`).run(source.name);
+      db.prepare(`UPDATE sources SET last_run_at=${NOW_SQL} WHERE name=?`).run(source.name);
     } catch (e) {
       if (e instanceof BudgetExceededError) {
         console.error(`[pulse] budget exhausted while '${source.name}' was indexing — clean stop`);

@@ -1,6 +1,6 @@
 {
   "name": "@loomwerk/server",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "type": "module",
   "license": "AGPL-3.0-only",
@@ -13,7 +13,7 @@
     "test": "tsx src/scripts/smoketest.ts && tsx src/scripts/engine-smoketest.ts && tsx src/scripts/connector-smoketest.ts && tsx src/scripts/mcp-smoketest.ts && tsx src/scripts/provider-smoketest.ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "better-sqlite3": "^12.4.1",
     "express": "^5.1.0",
     "zod": "^4.4.3"

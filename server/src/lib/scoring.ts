@@ -1,6 +1,6 @@
 import type { Database } from 'better-sqlite3';
 
-import { JETZT_SQL } from '../lib/zeit.js';
+import { NOW_SQL } from '../lib/time.js';
 // Selection stage: critic scores + MAP-elites quality-diversity.
 //
 // The point of MAP-elites here: don't keep the N best ideas overall (they
@@ -69,7 +69,7 @@ export function scoreHypothesis(db: Database, id: number, scores: Scores): void 
   const niche = `${h.domain ?? 'unknown'}${topic}:${h.variation_op ?? 'none'}`;
   db.prepare(
     `UPDATE hypotheses SET score_novelty=@nov, score_value=@val, score_feasibility=@fea,
-       score_surprise=@sur, niche=@niche, updated_at=${JETZT_SQL} WHERE id=@id`,
+       score_surprise=@sur, niche=@niche, updated_at=${NOW_SQL} WHERE id=@id`,
   ).run({
     id,
     niche,
@@ -127,14 +127,14 @@ export function selectElites(db: Database): EliteResult {
       group.sort((a, b) => rankScore(b) - rankScore(a) || b.id - a.id);
       const winner = group[0]!;
       if (winner.status !== 'provocation') {
-        db.prepare(`UPDATE hypotheses SET status='provocation', updated_at=${JETZT_SQL} WHERE id=?`).run(
+        db.prepare(`UPDATE hypotheses SET status='provocation', updated_at=${NOW_SQL} WHERE id=?`).run(
           winner.id,
         );
       }
       elites.push(winner.id);
       for (const loser of group.slice(1)) {
         if (loser.status !== 'dismissed') {
-          db.prepare(`UPDATE hypotheses SET status='dismissed', updated_at=${JETZT_SQL} WHERE id=?`).run(
+          db.prepare(`UPDATE hypotheses SET status='dismissed', updated_at=${NOW_SQL} WHERE id=?`).run(
             loser.id,
           );
         }

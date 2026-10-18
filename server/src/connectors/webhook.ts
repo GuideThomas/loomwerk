@@ -1,7 +1,7 @@
 import type { Database } from 'better-sqlite3';
 import type { Seed, SeedSource, SourceContext } from '../engine/seeds.js';
 
-import { JETZT_SQL } from '../lib/zeit.js';
+import { NOW_SQL } from '../lib/time.js';
 // Webhook/API ingest. External systems (agents, CI, monitoring, other
 // tools) POST tensions to /api/seeds; each cycle drains the queue. This is
 // how "running agents, newsletters, jobs, daily changes" attach to the
@@ -75,7 +75,7 @@ export const webhookSource: SeedSource = {
         tension: row.tension,
         refs,
       });
-      ctx.db.prepare(`UPDATE pending_seeds SET consumed_at=${JETZT_SQL} WHERE id=?`).run(row.id);
+      ctx.db.prepare(`UPDATE pending_seeds SET consumed_at=${NOW_SQL} WHERE id=?`).run(row.id);
     }
     return Promise.resolve(seeds);
   },
