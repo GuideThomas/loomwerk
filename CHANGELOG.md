@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.3 — 2026-10-22
 
 ### Fixed
 
@@ -9,6 +9,11 @@
   and exited with code 0. It now reports the error, hints at `LOOMWERK_PORT`
   (and at Windows' reserved port ranges, which can include the default
   7791) and exits with code 1.
+
+### Changed
+
+- Dev dependency `vite` raised (high advisory in the dev server, fixed upstream);
+  not part of the published package. `npm audit`: 0 as of 22.10.2026.
 
 ## 0.3.2 — 2026-10-18
 
