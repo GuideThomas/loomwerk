@@ -52,7 +52,7 @@ export function apiRouter(db: Database): Router {
     const day = llmDayStats(db);
     res.json({
       ok: true,
-      version: '0.3.3',
+      version: '0.4.0',
       provider: cfg
         ? {
             configured: true,
