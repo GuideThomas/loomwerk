@@ -161,6 +161,33 @@ await withServer([], async (port) => {
     assert(r.status === 403, `status ${r.status}`);
   });
 
+  // The Host check lets IP literals and localhost through without config; the
+  // Origin check must not — an attacker can serve a page from either.
+  await check('CSRF: page served from an IP address is rejected (no Sec-Fetch-Site)', async () => {
+    const r = await request(port, 'POST', '/api/engine/cycle', {
+      host: local,
+      origin: 'http://203.0.113.5',
+    });
+    assert(r.status === 403, `status ${r.status}`);
+  });
+
+  await check('CSRF: page on another localhost port is rejected', async () => {
+    const r = await request(port, 'POST', '/api/engine/cycle', {
+      host: local,
+      origin: 'http://localhost:3000',
+      'sec-fetch-site': 'same-site',
+    });
+    assert(r.status === 403, `status ${r.status}`);
+  });
+
+  await check('default port: Origin http://localhost matches Host localhost', async () => {
+    const r = await request(port, 'POST', '/api/engine/cycle', {
+      host: 'localhost',
+      origin: 'http://localhost',
+    });
+    assert(r.status === 409, `status ${r.status}`);
+  });
+
   await check('Origin "null" (sandboxed iframe, file://) is rejected', async () => {
     const r = await request(port, 'POST', '/api/engine/cycle', { host: local, origin: 'null' });
     assert(r.status === 403, `status ${r.status}`);
@@ -206,6 +233,23 @@ await withServer(['loomwerk.example.com'], async (port) => {
       'sec-fetch-site': 'same-origin',
     });
     assert(p.status === 409, `POST status ${p.status}`);
+  });
+
+  await check('reverse proxy rewrites Host: the listed public Origin passes', async () => {
+    const r = await request(port, 'POST', '/api/engine/cycle', {
+      host: `127.0.0.1:${port}`,
+      origin: 'https://loomwerk.example.com',
+      'sec-fetch-site': 'same-origin',
+    });
+    assert(r.status === 409, `status ${r.status}`);
+  });
+
+  await check('a configured list does not make IP origins trusted', async () => {
+    const r = await request(port, 'POST', '/api/engine/cycle', {
+      host: `127.0.0.1:${port}`,
+      origin: 'http://203.0.113.5',
+    });
+    assert(r.status === 403, `status ${r.status}`);
   });
 
   await check('configured host does not open other names', async () => {

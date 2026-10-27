@@ -194,7 +194,8 @@ cannot tell you:
 
 Requests from other web pages are rejected even without a token: a
 `POST`/`PATCH`/`PUT`/`DELETE` that the browser marks as cross-site
-(`Sec-Fetch-Site`) or that carries a foreign `Origin` gets 403. curl, webhooks
+(`Sec-Fetch-Site`) or whose `Origin` is not Loomwerk's own host and port gets
+403 — a page on another localhost port counts as foreign too. curl, webhooks
 and scripts send neither header and are unaffected.
 
 More knobs (thresholds, caps, thread depth) are documented in the source —

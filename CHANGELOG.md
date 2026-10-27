@@ -14,7 +14,9 @@ were traced in the source, not reproduced against a real browser.
   page could re-resolve its own domain to 127.0.0.1 and use the open API
   through the operator's browser — reading and writing data, starting cycles.
 - **Cross-site requests blocked.** `POST`/`PATCH`/`PUT`/`DELETE` with
-  `Sec-Fetch-Site: cross-site` or a foreign `Origin` get 403. A plain form on
+  `Sec-Fetch-Site: cross-site`, or with an `Origin` that is not Loomwerk's own
+  (same host and port as the request, or a name from `LOOMWERK_ALLOWED_HOSTS`
+  for reverse proxies that rewrite `Host`), get 403. A plain form on
   any web page could start LLM cycles (`/api/engine/cycle`) on the operator's
   key, no preflight needed. curl, webhooks and scripts send neither header and
   are unaffected.

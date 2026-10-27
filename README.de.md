@@ -177,8 +177,10 @@ verraten kann und was nicht:
 
 Anfragen anderer Webseiten werden auch ohne Token abgewiesen: Ein
 `POST`/`PATCH`/`PUT`/`DELETE`, den der Browser als seitenübergreifend markiert
-(`Sec-Fetch-Site`) oder der einen fremden `Origin` trägt, bekommt 403. curl,
-Webhooks und Skripte senden keinen der beiden Header und sind nicht betroffen.
+(`Sec-Fetch-Site`) oder dessen `Origin` nicht Host und Port von Loomwerk selbst
+nennt, bekommt 403 — auch eine Seite auf einem anderen localhost-Port gilt als
+fremd. curl, Webhooks und Skripte senden keinen der beiden Header und sind
+nicht betroffen.
 
 Weitere Stellschrauben (Schwellwerte, Caps, Faden-Tiefe) sind im Quellcode
 dokumentiert — jede trägt einen Kommentar mit dem Produktions-Vorfall

@@ -50,6 +50,12 @@ export function isAllowedHostname(hostname: string, extraHosts: readonly string[
   const h = hostname.toLowerCase().replace(/\.$/, '');
   if (net.isIP(h)) return true;
   if (h === 'localhost' || h.endsWith('.localhost')) return true;
+  return isConfiguredHostname(h, extraHosts);
+}
+
+// Only the operator's LOOMWERK_ALLOWED_HOSTS entries, no implicit names.
+function isConfiguredHostname(hostname: string, extraHosts: readonly string[]): boolean {
+  const h = hostname.toLowerCase().replace(/\.$/, '');
   return extraHosts.some((entry) => {
     const e = entry.toLowerCase().replace(/\.$/, '');
     if (e.startsWith('.')) return h === e.slice(1) || h.endsWith(e);
@@ -57,7 +63,13 @@ export function isAllowedHostname(hostname: string, extraHosts: readonly string[
   });
 }
 
-function originIsAllowed(origin: string, extraHosts: readonly string[]): boolean {
+// The Origin must be the server's own origin: same host AND port as the Host
+// header. The free pass for IP literals and localhost that the Host check
+// grants does not carry over — an attacker can serve a page from an IP address
+// or from another port on localhost, and that page's Origin would pass a
+// hostname-only check. Behind a reverse proxy that rewrites Host, the public
+// name counts too, but only when it is listed in LOOMWERK_ALLOWED_HOSTS.
+function originIsAllowed(origin: string, hostHeader: string, extraHosts: readonly string[]): boolean {
   let url: URL;
   try {
     url = new URL(origin); // "null" (sandboxed iframes, file://) throws here
@@ -65,8 +77,13 @@ function originIsAllowed(origin: string, extraHosts: readonly string[]): boolean
     return false;
   }
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return false;
-  const hostname = url.hostname.replace(/^\[(.*)\]$/, '$1');
-  return isAllowedHostname(hostname, extraHosts);
+  try {
+    // Same scheme on both sides, so default ports (":80", ":443") normalize alike.
+    if (new URL(`${url.protocol}//${hostHeader}`).host === url.host) return true;
+  } catch {
+    // unparsable Host was already rejected; fall through to the allowlist
+  }
+  return isConfiguredHostname(url.hostname.replace(/^\[(.*)\]$/, '$1'), extraHosts);
 }
 
 function reject(res: Response, error: string): void {
@@ -77,7 +94,7 @@ export function requestGuard(extraHosts: readonly string[]): RequestHandler {
   return (req: Request, res: Response, next: NextFunction) => {
     const hostHeader = req.headers.host;
     const hostname = hostHeader ? hostnameFromHostHeader(hostHeader) : null;
-    if (!hostname || !isAllowedHostname(hostname, extraHosts)) {
+    if (!hostHeader || !hostname || !isAllowedHostname(hostname, extraHosts)) {
       reject(res, `host not allowed: ${hostHeader ?? '(none)'} — add it to LOOMWERK_ALLOWED_HOSTS`);
       return;
     }
@@ -88,7 +105,7 @@ export function requestGuard(extraHosts: readonly string[]): RequestHandler {
         return;
       }
       const origin = req.headers.origin;
-      if (origin !== undefined && !originIsAllowed(origin, extraHosts)) {
+      if (origin !== undefined && !originIsAllowed(origin, hostHeader, extraHosts)) {
         reject(res, `origin not allowed: ${origin}`);
         return;
       }
