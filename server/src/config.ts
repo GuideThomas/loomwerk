@@ -12,4 +12,12 @@ export const config = {
   // Optional bearer token for the API. Empty = open (fine for localhost use;
   // set it as soon as you expose Loomwerk beyond your own machine).
   apiToken: process.env.LOOMWERK_TOKEN ?? '',
+  // Extra hostnames the server answers to, comma-separated (a leading dot also
+  // covers subdomains). IP literals and localhost always work; anything else —
+  // a reverse-proxy domain, a Docker service name — is rejected with 403 to
+  // stop DNS rebinding (see http-guard.ts).
+  allowedHosts: (process.env.LOOMWERK_ALLOWED_HOSTS ?? '')
+    .split(',')
+    .map((h) => h.trim())
+    .filter(Boolean),
 };

@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased
+
+### Security
+
+Both issues were found in a source-level security review (2026-10-27) and
+were reachable with the default configuration (loopback, empty token). They
+were traced in the source, not reproduced against a real browser.
+
+- **DNS rebinding blocked.** The server now checks the `Host` header. IP
+  addresses, `localhost` and `*.localhost` work as before; any other name gets
+  403 unless it is listed in the new `LOOMWERK_ALLOWED_HOSTS`. Before, a web
+  page could re-resolve its own domain to 127.0.0.1 and use the open API
+  through the operator's browser — reading and writing data, starting cycles.
+- **Cross-site requests blocked.** `POST`/`PATCH`/`PUT`/`DELETE` with
+  `Sec-Fetch-Site: cross-site` or a foreign `Origin` get 403. A plain form on
+  any web page could start LLM cycles (`/api/engine/cycle`) on the operator's
+  key, no preflight needed. curl, webhooks and scripts send neither header and
+  are unaffected.
+
+### Upgrade note
+
+- If you reach Loomwerk through a domain (reverse proxy) or a Docker service
+  name, add that name to `LOOMWERK_ALLOWED_HOSTS`. Otherwise every request
+  gets 403, with a message that names the setting.
+
 ## 0.3.3 — 2026-10-22
 
 ### Fixed

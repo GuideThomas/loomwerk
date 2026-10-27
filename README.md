@@ -186,10 +186,16 @@ cannot tell you:
 | `LOOMWERK_CYCLE_HOUR` | unset | Set 0–23 for one automatic cycle per day |
 | `LOOMWERK_PORT` / `LOOMWERK_HOST` | `7791` / `127.0.0.1` | Bind address |
 | `LOOMWERK_TOKEN` | unset | Bearer token for the API (set it when exposing beyond localhost) |
+| `LOOMWERK_ALLOWED_HOSTS` | unset | Extra hostnames the server answers to, comma-separated (`.example.com` covers subdomains). IP addresses and `localhost` always work; any other `Host` gets 403 — protection against DNS rebinding. Set it when you reach Loomwerk through a domain or a Docker service name |
 | `LOOMWERK_DATA_DIR` | `./data` | SQLite + connector caches |
 | `LOOMWERK_ANCHOR_SETUP` / `LOOMWERK_ANCHOR_IDEA` | built-in | **The personalization surface** — describe your real scale, skills and constraints; the defaults are deliberately generic |
 | `LOOMWERK_ASSETS_FILE` | `data/assets.md` | Inventory of things you already have, so ideas arrive as extensions, not rebuilds |
 | `LOOMWERK_DEMO_SEEDS` | on | `0` disables the bundled demo tensions |
+
+Requests from other web pages are rejected even without a token: a
+`POST`/`PATCH`/`PUT`/`DELETE` that the browser marks as cross-site
+(`Sec-Fetch-Site`) or that carries a foreign `Origin` gets 403. curl, webhooks
+and scripts send neither header and are unaffected.
 
 More knobs (thresholds, caps, thread depth) are documented in the source —
 each has a comment explaining the production incident behind it.

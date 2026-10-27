@@ -11,7 +11,7 @@
     "prebuild": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "build": "tsc",
     "mcp": "tsx src/mcp.ts",
-    "test": "tsx src/scripts/smoketest.ts && tsx src/scripts/engine-smoketest.ts && tsx src/scripts/connector-smoketest.ts && tsx src/scripts/mcp-smoketest.ts && tsx src/scripts/provider-smoketest.ts"
+    "test": "tsx src/scripts/smoketest.ts && tsx src/scripts/engine-smoketest.ts && tsx src/scripts/connector-smoketest.ts && tsx src/scripts/mcp-smoketest.ts && tsx src/scripts/provider-smoketest.ts && tsx src/scripts/http-guard-smoketest.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",

@@ -169,10 +169,16 @@ verraten kann und was nicht:
 | `LOOMWERK_CYCLE_HOUR` | ungesetzt | 0–23 für einen automatischen Zyklus pro Tag |
 | `LOOMWERK_PORT` / `LOOMWERK_HOST` | `7791` / `127.0.0.1` | Bind-Adresse |
 | `LOOMWERK_TOKEN` | ungesetzt | Bearer-Token für die API (setzen, sobald mehr als localhost) |
+| `LOOMWERK_ALLOWED_HOSTS` | ungesetzt | Weitere Hostnamen, unter denen der Server antwortet, kommagetrennt (`.example.com` deckt Subdomains ab). IP-Adressen und `localhost` gehen immer; jeder andere `Host` bekommt 403 — Schutz gegen DNS-Rebinding. Setzen, wenn Loomwerk über eine Domain oder einen Docker-Dienstnamen erreicht wird |
 | `LOOMWERK_DATA_DIR` | `./data` | SQLite + Connector-Caches |
 | `LOOMWERK_ANCHOR_SETUP` / `LOOMWERK_ANCHOR_IDEA` | eingebaut | **Die Personalisierungs-Fläche** — beschreibe deine reale Größenordnung, Fähigkeiten und Grenzen; die Defaults sind bewusst generisch |
 | `LOOMWERK_ASSETS_FILE` | `data/assets.md` | Inventar dessen, was du schon hast — Ideen kommen als Erweiterung, nicht als Neubau |
 | `LOOMWERK_DEMO_SEEDS` | an | `0` deaktiviert die Demo-Spannungen |
+
+Anfragen anderer Webseiten werden auch ohne Token abgewiesen: Ein
+`POST`/`PATCH`/`PUT`/`DELETE`, den der Browser als seitenübergreifend markiert
+(`Sec-Fetch-Site`) oder der einen fremden `Origin` trägt, bekommt 403. curl,
+Webhooks und Skripte senden keinen der beiden Header und sind nicht betroffen.
 
 Weitere Stellschrauben (Schwellwerte, Caps, Faden-Tiefe) sind im Quellcode
 dokumentiert — jede trägt einen Kommentar mit dem Produktions-Vorfall
