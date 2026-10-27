@@ -21,6 +21,24 @@ were traced in the source, not reproduced against a real browser.
   key, no preflight needed. curl, webhooks and scripts send neither header and
   are unaffected.
 
+### Changed
+
+- Runtime dependencies raised for three advisories:
+  - `zod` 4.4.3 → 4.6.7 — memory exhaustion while validating oversized
+    constrained collections ([GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)).
+    The minimum in `package.json` is now `^4.6.7`, so the published package
+    requires it too.
+  - `body-parser` 2.3.0 → 2.4.0 (via express) — denial of service via trailing
+    bytes after a compressed request body ([GHSA-27r3-jxmh-p828](https://github.com/advisories/GHSA-27r3-jxmh-p828)).
+  - `fast-uri` 3.1.8 → 3.1.9 (via the MCP SDK's `ajv`) — four URI parsing
+    advisories, among them scheme spoofing and host confusion
+    ([GHSA-w74x-v6f9-j3xg](https://github.com/advisories/GHSA-w74x-v6f9-j3xg),
+    [GHSA-wjr9-j795-jxcr](https://github.com/advisories/GHSA-wjr9-j795-jxcr)).
+
+  The last two are lockfile updates within the existing ranges; a fresh install
+  of the package resolves the fixed versions as well (checked). `npm audit`: 0
+  as of 27.10.2026, for the repository and for a fresh package install.
+
 ### Upgrade note
 
 - If you reach Loomwerk through a domain (reverse proxy) or a Docker service
