@@ -9,3 +9,7 @@ data/
 *.db
 .DS_Store
 build/
+
+# Claude Code: lokale Rechte und Schlüssel (settings.local.json) nie veröffentlichen
+.claude/settings.local.json
+.claude/settings.local.json.bak-*
